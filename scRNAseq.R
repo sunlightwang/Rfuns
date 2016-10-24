@@ -143,9 +143,8 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
   
   xi <- mean( 1 / sf.ERCC )
   m <- ncol(Gene.cnt.norm)
-  psia1theta <- mean( 1 / sf.ERCC ) +
-    #psia1theta <- mean( 1 / sf.Gene ) + ### %%% modified by me
-    ( coefficients(fit)["a1tilde"] - xi ) * mean( sf.ERCC / sf.Gene)
+  #psia1theta <- mean( 1 / sf.ERCC ) + ( coefficients(fit)["a1tilde"] - xi ) * mean( sf.ERCC / sf.Gene) ## from scLVM
+  psia1theta <- mean( 1 / sf.Gene ) + coefficients(fit)["a1tilde"] * mean( sf.ERCC / sf.Gene)
   cv2th <- coefficients(fit)["a0"] + minBiolDisp + coefficients(fit)["a0"] * minBiolDisp
   testDenom <- ( means.Gene * psia1theta + means.Gene^2 * cv2th ) / ( 1 + cv2th/m )
   if(is.null(topN)) { 
