@@ -263,7 +263,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=10, max_iter=2000, try_tim
     p <- ggplot(tsne.rst, aes(tSNE.1, tSNE.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
     print(p)
   }
-  if(!is.null(gene_expr)) {
+  if(plot & !is.null(gene_expr)) {
     ### for individual genes
     nrowplot <- plot_nrow
     ngene <- length(gene_expr)
@@ -274,3 +274,4 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=10, max_iter=2000, try_tim
     print(p)
   }
 }
+
