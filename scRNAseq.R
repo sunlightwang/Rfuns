@@ -106,11 +106,16 @@ Count.norm <- function(counts) {
   t( t(counts) / counts.sf )
 }
 
-HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, topN=NULL) {
+HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
   sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
   sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
   ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
   Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
+  if(winsorize) { 
+    winsorization <- function(vec) { sec_max <- sort(vec,decreasing=T)[2]; vec[which.max(vec)] <- sec_max; vec}
+    ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
+    Gene.cnt.norm <- t(apply(Gene.cnt.norm, 1, winsorization))
+  }
   means.ERCC <- rowMeans( ERCC.cnt.norm )
   vars.ERCC <- rowVars( ERCC.cnt.norm )
   cv2.ERCC <- vars.ERCC / means.ERCC^2
