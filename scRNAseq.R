@@ -263,6 +263,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
     p <- ggplot(tsne.rst, aes(tSNE.1, tSNE.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
     print(p)
   }
+  gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
   if(plot & !is.null(gene_expr)) {
     ### for individual genes
     nrowplot <- plot_nrow
@@ -287,6 +288,7 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neig
     p <- ggplot(dmap.rst, aes(dmap.1, dmap.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
     print(p)
   }
+  gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
   if(plot & !is.null(gene_expr)) {
     ### for individual genes
     nrowplot <- plot_nrow
