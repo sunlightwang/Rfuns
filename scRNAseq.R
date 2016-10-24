@@ -1,3 +1,5 @@
+### this is an R function library for scRNAseq data analysis
+### TODO: make an object throughout the analysis, and using flags to indicate analysis steps; one can use the predifined pipeline and can also customize their own pipelines 
 
 library(ggplot2)
 library(DESeq2)
@@ -104,7 +106,7 @@ Count.norm <- function(counts) {
   t( t(counts) / counts.sf )
 }
 
-HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1) {
+HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, topN=NULL) {
   sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
   sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
   ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
@@ -141,10 +143,16 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
     ( coefficients(fit)["a1tilde"] - xi ) * mean( sf.ERCC / sf.Gene)
   cv2th <- coefficients(fit)["a0"] + minBiolDisp + coefficients(fit)["a0"] * minBiolDisp
   testDenom <- ( means.Gene * psia1theta + means.Gene^2 * cv2th ) / ( 1 + cv2th/m )
-  p <- 1 - pchisq( vars.Gene * (m-1) / testDenom, m-1 )
-  padj <- p.adjust( p, "BH" )
-  HVG.stat <- table( padj < padjcutoff & !is.nan(padj))
-  
+  if(is.null(topN)) { 
+    p <- 1 - pchisq( vars.Gene * (m-1) / testDenom, m-1 )
+    padj <- p.adjust( p, "BH" )
+    HVG.stat <- table( padj < padjcutoff & !is.nan(padj))
+    HVG <- names(padj) [padj < padjcutoff & !is.nan(padj)]
+  } else { 
+    Gene.bio_var <- vars.Gene * (m-1) / testDenom
+    HVG <- names(sort(Gene.bio_var, decreasing=T)[1:topN])
+    HVG.stat <- table(names(means.Gene) %in% HVG)
+  }
   if(plot) {
     plot( NULL, xaxt="n", yaxt="n",
           log="xy", xlim = c( 1e-2, 1e5 ), ylim = c( 0.01, 100 ),
@@ -154,8 +162,13 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
     axis( 2, 10^(-2:2), c( "0.01", "0.1", "1", "10" ,"100"), las=2 )
     abline( h=10^(-2:1), v=10^(-2:5), col="#D0D0D0", lwd=2 )
     # Plot the plant genes, use a different color if they are highly variable
-    points( means.Gene, cv2.Gene, pch=20, cex=.2,
+    if(is.null(topN)) {
+      points( means.Gene, cv2.Gene, pch=20, cex=.2,
             col = ifelse( padj < padjcutoff, "#C0007090", "#70500040" ) )
+    } else {
+      points( means.Gene, cv2.Gene, pch=20, cex=.2,
+            col = ifelse( names(means.Gene) %in% HVG, "#C0007090", "#70500040" ) )
+    }
     # Add the technical noise fit, as before
     xg <- 10^seq( -2, 6, length.out=1000 )
     lines( xg, coefficients(fit)["a1tilde"] / xg + coefficients(fit)["a0"], col="#FF000080", lwd=3 )
@@ -166,11 +179,11 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
     points( means.ERCC, cv2.ERCC, pch=20, cex=1, col="#0060B8A0" )
     legend("bottomleft", legend=paste0("HVG: ", HVG.stat[2]," out of ", sum(HVG.stat)), bty="n")
   }
-  HVG <- names(padj) [padj < padjcutoff & !is.nan(padj)]
+  HVG
 } 
 
 
-PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=9, plot_nrow=3) {
+PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3) {
   center.scale <- function(data)  ( data - rowMeans(data) ) / sqrt(rowVars(data)) 
   Gene.cnt.scaled <- center.scale( log2(Gene.cnt.norm[HVG,]+1) )
   pca.real <- prcomp(t(Gene.cnt.scaled))
@@ -189,7 +202,7 @@ PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cu
     p <- ggplot(pca.rst, aes(PC1, PC2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication() 
     print(p)
   }
-  if(plot) {
+  if(plot & plot_ngene > 0) {
     ### for individual genes
     ngene <- plot_ngene
     nrowplot <- plot_nrow
