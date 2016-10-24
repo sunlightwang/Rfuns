@@ -107,6 +107,7 @@ Count.norm <- function(counts) {
 }
 
 HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
+  if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
   sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
   ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
@@ -119,6 +120,9 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
   means.ERCC <- rowMeans( ERCC.cnt.norm )
   vars.ERCC <- rowVars( ERCC.cnt.norm )
   cv2.ERCC <- vars.ERCC / means.ERCC^2
+  means.Gene <- rowMeans( Gene.cnt.norm )
+  vars.Gene <- rowVars( Gene.cnt.norm )
+  cv2.Gene <- vars.Gene / means.Gene^2
   # minimum mean value 
   minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > .3 ) ], .8) )
   useForFit<- means.ERCC >= minMeanForFit
@@ -135,12 +139,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
               means.ERCC[useForFit], fit$fitted.values, col="gray" )
     legend("bottomleft", legend=paste0("explained variances: ", signif(1 - residual / total, 3)), bty="n")
   }
- 
   ######
-  means.Gene <- rowMeans( Gene.cnt.norm )
-  vars.Gene <- rowVars( Gene.cnt.norm )
-  cv2.Gene <- vars.Gene / means.Gene^2
-  
   xi <- mean( 1 / sf.ERCC )
   m <- ncol(Gene.cnt.norm)
   #psia1theta <- mean( 1 / sf.ERCC ) + ( coefficients(fit)["a1tilde"] - xi ) * mean( sf.ERCC / sf.Gene) ## from scLVM
@@ -183,7 +182,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
     points( means.ERCC, cv2.ERCC, pch=20, cex=1, col="#0060B8A0" )
     legend("bottomleft", legend=paste0("HVG: ", HVG.stat[2]," out of ", sum(HVG.stat)), bty="n")
   }
-  HVG
+  return(HVG)
 } 
 
 
@@ -249,6 +248,7 @@ PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cu
   pca.padj.cutoff <- pca.padj.cutoff
   table(pca.padj < pca.padj.cutoff)
   pca_gene <- t(pca.real$rotation[, pca.padj < pca.padj.cutoff]) %*% Gene.cnt.scaled
+  return(pca_gene)
 }
 
 tSNE.analysis <- function(Gene.cnt.scaled, perplexity=10, max_iter=2000, try_times=100, plot=T, gene_expr=c(), plot_nrow=3, ...) {
@@ -273,5 +273,6 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=10, max_iter=2000, try_tim
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
+  return(tsne.rst)
 }
 
