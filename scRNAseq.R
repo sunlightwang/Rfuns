@@ -10,6 +10,7 @@ library(grid)
 library(ggthemes)
 library(gridExtra)
 library(scales)
+library(diffusionMap)
 
 theme_Publication <- function(base_size=14, base_family="Helvetica") {
   (theme_foundation(base_size=base_size, base_family=base_family)
