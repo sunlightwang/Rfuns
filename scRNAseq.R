@@ -252,7 +252,7 @@ PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cu
   return(pca_gene)
 }
 
-tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_times=100, plot=T, gene_expr=c(), plot_nrow=3, ...) {
+tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_times=100, plot=T, gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) {
   library(Rtsne)
   tsne.out <- sapply(1:try_times, function(x) Rtsne(t(Gene.cnt.scaled), dims=2, pca=F, perplexity=perplexity, max_iter=max_iter, ...))
   best <- which.min(sapply(1:try_times, function(x) tail(tsne.out[,x]$itercosts, 1)))
@@ -264,21 +264,21 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
     p <- ggplot(tsne.rst, aes(tSNE.1, tSNE.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
     print(p)
   }
-  gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
-  if(plot & !is.null(gene_expr) & length(gene_expr) > 0) {
+  display <- intersect(display, rownames(gene_expr))
+  if(plot & !is.null(display) & length(display) > 0) {
     ### for individual genes
     nrowplot <- plot_nrow
-    ngene <- length(gene_expr)
+    ngene <- length(display)
     pl <- lapply(1:ngene, function(x) 
-      ggplot(tsne.rst, aes(tSNE.1, tSNE.2, color = Gene.cnt.scaled[gene_expr[x],])) + geom_point(size=1) + theme_graphOnly() + 
-        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=gene_expr[x]))
+      ggplot(tsne.rst, aes(tSNE.1, tSNE.2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
+        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x]))
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
   return(tsne.rst)
 }
 
-diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neigen=10, plot=T, gene_expr=c(), plot_nrow=3, ...) { 
+diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neigen=10, plot=T, gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
   D <- dist(Gene.cnt.scaled, method=dist.method)
   dmap = diffuse(D, neigen=neigen, ...) 
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
@@ -289,14 +289,14 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neig
     p <- ggplot(dmap.rst, aes(dmap.1, dmap.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
     print(p)
   }
-  gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
-  if(plot & !is.null(gene_expr) & length(gene_expr) > 0) {
+  display <- intersect(display, rownames(gene_expr))
+  if(plot & !is.null(display) & length(display) > 0) {
     ### for individual genes
     nrowplot <- plot_nrow
-    ngene <- length(gene_expr)
+    ngene <- length(display)
     pl <- lapply(1:ngene, function(x) 
-      ggplot(dmap.rst, aes(dmap.1, dmap.2, color = Gene.cnt.scaled[gene_expr[x],])) + geom_point(size=1) + theme_graphOnly() + 
-        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=gene_expr[x]))
+      ggplot(dmap.rst, aes(dmap.1, dmap.2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
+        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x]))
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
