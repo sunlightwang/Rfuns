@@ -187,9 +187,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
 } 
 
 
-PCA.analysis <- function(Gene.cnt.norm, HVG, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3) {
-  center.scale <- function(data)  ( data - rowMeans(data) ) / sqrt(rowVars(data)) 
-  Gene.cnt.scaled <- center.scale( log2(Gene.cnt.norm[HVG,]+1) )
+PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3) {
   pca.real <- prcomp(t(Gene.cnt.scaled))
   pca.explained <- pca.real$sdev^2 / sum(pca.real$sdev^2) * 100
   if(plot) {
