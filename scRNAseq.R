@@ -279,7 +279,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
 }
 
 diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neigen=10, plot=T, gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
-  D <- dist(Gene.cnt.scaled, method=dist.method)
+  D <- dist(t(Gene.cnt.scaled), method=dist.method)
   dmap = diffuse(D, neigen=neigen, ...) 
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
   dmap.rst <- data.frame(dmap.1=dmap$X[,1], dmap.2=dmap$X[,2], type=type, names=colnames(Gene.cnt.scaled))
