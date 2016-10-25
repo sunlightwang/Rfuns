@@ -264,7 +264,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
     print(p)
   }
   gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
-  if(plot & !is.null(gene_expr)) {
+  if(plot & !is.null(gene_expr) & length(gene_expr) > 0) {
     ### for individual genes
     nrowplot <- plot_nrow
     ngene <- length(gene_expr)
@@ -289,7 +289,7 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neig
     print(p)
   }
   gene_expr <- intersect(gene_expr, rownames(Gene.cnt.scaled))
-  if(plot & !is.null(gene_expr)) {
+  if(plot & !is.null(gene_expr) & length(gene_expr) > 0) {
     ### for individual genes
     nrowplot <- plot_nrow
     ngene <- length(gene_expr)
