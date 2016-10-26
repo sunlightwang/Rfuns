@@ -107,6 +107,43 @@ Count.norm <- function(counts) {
   t( t(counts) / counts.sf )
 }
 
+gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T) {
+  if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
+  sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
+  sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
+  ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
+  Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
+  if(winsorize) { 
+    winsorization <- function(vec) { sec_max <- sort(vec,decreasing=T)[2]; vec[which.max(vec)] <- sec_max; vec}
+    ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
+    Gene.cnt.norm <- t(apply(Gene.cnt.norm, 1, winsorization))
+  }
+  means.ERCC <- rowMeans( ERCC.cnt.norm )
+  vars.ERCC <- rowVars( ERCC.cnt.norm )
+  cv2.ERCC <- vars.ERCC / means.ERCC^2
+  means.Gene <- rowMeans( Gene.cnt.norm )
+  vars.Gene <- rowVars( Gene.cnt.norm )
+  cv2.Gene <- vars.Gene / means.Gene^2
+  # minimum mean value 
+  minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > .3 ) ], .8) )
+  useForFit<- means.ERCC >= minMeanForFit
+  fit <- glmgam.fit( cbind( a0 = 1, a1tilde = 1/means.ERCC[useForFit] ), cv2.ERCC[useForFit] )
+  residual <- var( log( fitted.values(fit) ) - log( cv2.ERCC[useForFit] ) )
+  total <- var( log( cv2.ERCC[useForFit] ) )
+  # # explained variances
+  explained <- 1 - residual / total
+  print(paste("ERCC curve fit explained:", explained))
+  ######
+  xi <- mean( 1 / sf.ERCC )
+  m <- ncol(Gene.cnt.norm)
+  #psia1theta <- mean( 1 / sf.ERCC ) + ( coefficients(fit)["a1tilde"] - xi ) * mean( sf.ERCC / sf.Gene) ## from scLVM
+  psia1theta <- mean( 1 / sf.Gene ) + coefficients(fit)["a1tilde"] * mean( sf.ERCC / sf.Gene)
+  cv2th <- coefficients(fit)["a0"] + minBiolDisp + coefficients(fit)["a0"] * minBiolDisp
+  testDenom <- ( means.Gene * psia1theta + means.Gene^2 * cv2th ) / ( 1 + cv2th/m )
+  Gene.bio_var <- vars.Gene * (m-1) / testDenom
+  return(Gene.bio_var)
+} 
+
 HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
@@ -185,7 +222,6 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
   }
   return(HVG)
 } 
-
 
 PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3) {
   pca.real <- prcomp(t(Gene.cnt.scaled))
