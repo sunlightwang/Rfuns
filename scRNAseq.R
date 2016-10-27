@@ -223,7 +223,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
   return(HVG)
 } 
 
-PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3) {
+PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3, permute=TRUE) {
   pca.real <- prcomp(t(Gene.cnt.scaled))
   pca.explained <- pca.real$sdev^2 / sum(pca.real$sdev^2) * 100
   if(plot) {
@@ -269,21 +269,24 @@ PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutof
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="major genes in PC2")
     print(p)
   }
-  #### PCA permutation
-  permute.times <- pca.perm.n
-  Gene.permute <- function(data) do.call(rbind, sapply(1:nrow(data), function(x) sample(data[x,]), simplify=F)) 
-  pca.permuted <- sapply(1:permute.times, function(x){
-    ev <- prcomp(t(Gene.permute(Gene.cnt.scaled)))$sdev ^ 2
-    max( ev / sum(ev) )
-  })
-  pca.pval <- sapply(1:length(pca.real$sdev), function(x) {
-    sum(pca.real$sdev[x]^2/sum(pca.real$sdev^2) < pca.permuted) / length(pca.permuted)
-  })
-  pca.padj <- p.adjust(pca.pval, method="BH")
-  pca.padj.cutoff <- pca.padj.cutoff
-  table(pca.padj < pca.padj.cutoff)
-  pca_gene <- t(pca.real$rotation[, pca.padj < pca.padj.cutoff]) %*% Gene.cnt.scaled
-  return(pca_gene)
+  if(permute) {
+    #### PCA permutation
+    permute.times <- pca.perm.n
+    Gene.permute <- function(data) do.call(rbind, sapply(1:nrow(data), function(x) sample(data[x,]), simplify=F)) 
+    pca.permuted <- sapply(1:permute.times, function(x){
+      ev <- prcomp(t(Gene.permute(Gene.cnt.scaled)))$sdev ^ 2
+      max( ev / sum(ev) )
+    })
+    pca.pval <- sapply(1:length(pca.real$sdev), function(x) {
+      sum(pca.real$sdev[x]^2/sum(pca.real$sdev^2) < pca.permuted) / length(pca.permuted)
+    })
+    pca.padj <- p.adjust(pca.pval, method="BH")
+    pca.padj.cutoff <- pca.padj.cutoff
+    table(pca.padj < pca.padj.cutoff)
+    pca_gene <- t(pca.real$rotation[, pca.padj < pca.padj.cutoff]) %*% Gene.cnt.scaled
+    return(pca_gene) 
+  }
+  return(pca.real)
 }
 
 tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_times=100, plot=T, gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) {
