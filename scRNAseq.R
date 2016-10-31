@@ -118,20 +118,26 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
     ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
     Gene.cnt.norm <- t(apply(Gene.cnt.norm, 1, winsorization))
   }
-  if(outlier.rm) { 
-    Gene.cnt.norm.log2 <- log2(1+Gene.cnt.norm)
-    Upper <- quantile(Gene.cnt.norm.log2, 3/4)
-    Lower <- quantile(Gene.cnt.norm.log2, 1/4)
-    IQR <- Upper - Lower
-    Upper.outlier <- Upper + outlier.coef * IQR
-    Lower.outlier <- Lower - outlier.coef * IQR
-    Gene.cnt.norm <- Gene.cnt.norm[Gene.cnt.norm.log2 > Lower.outlier & Gene.cnt.norm.log2 < Upper.outlier]
-  }
   means.ERCC <- rowMeans( ERCC.cnt.norm )
   vars.ERCC <- rowVars( ERCC.cnt.norm )
   cv2.ERCC <- vars.ERCC / means.ERCC^2
-  means.Gene <- rowMeans( Gene.cnt.norm )
-  vars.Gene <- rowVars( Gene.cnt.norm )
+  if(outlier.rm) { 
+    r <- apply(Gene.cnt.norm, 1, function(gene_cnt) {
+      gene_cnt_log2 <- log2(1+gene_cnt)
+      Upper <- quantile(gene_cnt_log2, 3/4)
+      Lower <- quantile(gene_cnt_log2, 1/4)
+      IQR <- Upper - Lower
+      Upper.outlier <- Upper + outlier.coef * IQR
+      Lower.outlier <- Lower - outlier.coef * IQR
+      gene_cnt <- gene_cnt[gene_cnt_log2 > Lower.outlier & gene_cnt_log2 < Upper.outlier]
+      data.frame(gene_mean=mean(gene_cnt), gene_var=var(gene_cnt))
+    })
+    means.Gene <- r$gene_mean
+    vars.Gene <- r$gene_var
+  } else {
+    means.Gene <- rowMeans( Gene.cnt.norm )
+    vars.Gene <- rowVars( Gene.cnt.norm )
+  }
   cv2.Gene <- vars.Gene / means.Gene^2
   # minimum mean value 
   minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > .3 ) ], .8) )
