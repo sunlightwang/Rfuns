@@ -6,6 +6,7 @@ library(org.Mm.eg.db)
 loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
                    type=c("BP", "MF", "CC")) {
   org <- match.arg(organism, c("mouse", "human"))
+  type <- match.arg(type, c("BP", "MF", "CC"))
   GoTerms <- as.list(GOTERM)
   GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
   GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
@@ -19,7 +20,7 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   # rm NAs
   annots <- annots[!is.na(annots[,4]),]
   if(length(type) == 1) {
-    annots <- annots[ annots$ONTOLOGY == "BP",]
+    annots <- annots[ annots$ONTOLOGY == type,]
   }
   data.frame(GeneSet=annots$GO, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
