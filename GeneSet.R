@@ -38,7 +38,8 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
                          enrich_fold <- sel_m / list_n / (SelM / totalN)
                          return(c(list_n, sel_m, enrich_fold))
                        }) )
-  nm <- nm[ nm[,1] >= minBgHit & nm[,2] >= minHit, ]
+  nm <- nm[ nm[,1] >= minBgHit & nm[,2] >= minHit, , drop=F]
+  if(nrow(nm) < 1) {return(NULL)}
   colnames(nm) <- c("bgHit", "Hit", "EnrichFold")
   ## white ball: in list
   ## black ball: out of list
