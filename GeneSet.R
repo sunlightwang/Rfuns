@@ -52,7 +52,6 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   result <- result[order(padj),]
   desc <- unique(data.frame(annots$GeneSet, annots$Desc))
   rownames(desc) <- desc$annots.GeneSet
-  result <- data.frame(result, desc=as.character(noquote(desc[rownames(result),2)))
+  result <- data.frame(result, desc=as.character(noquote(desc[rownames(result),2])))
   result[result$padj < padj_cutoff, ]
 }                          
-                          
