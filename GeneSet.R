@@ -3,41 +3,33 @@ library(AnnotationDbi)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
 
-### test example ###
-# selGeneList <- c("ENSMUSG00000036278",
-#                  "ENSMUSG00000047284",
-#                  "ENSMUSG00000036123",
-#                  "ENSMUSG00000033788",
-#                  "ENSMUSG00000087260",
-#                  "ENSMUSG00000040016",
-#                  "ENSMUSG00000029456",
-#                  "ENSMUSG00000041378",
-#                  "ENSMUSG00000002104",
-#                  "ENSMUSG00000049409") # input
-# fullGeneList <- "" # input
-# geneIDtype <- "ENSEMBL" # parmeter
-# minGSsize <- 5 # parmeter
-# topNSig <- 10 # parameter
-# organism <- "mouse" # parameter
-# quickGS(selGeneList)
-
-### functions ###
-quickGS <- function(selGeneList, geneIDtype = "ENSEMBL",  fullGeneList = "", 
-                    organism = c("mouse", "human"), minGSsize = 5, topNSig = 10) {
+loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
+                   type=c("BP", "MF", "CC")) {
   org <- match.arg(organism, c("mouse", "human"))
-  
   GoTerms <- as.list(GOTERM)
   GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
-  
+  GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
   if(org == "mouse") {
     annots <- select(org.Mm.eg.db, keys=GoVect,
-                     cols=geneIDtype, keytype="GO") 
+                     columns=geneIDtype, keytype="GO") 
   } else {
     annots <- select(org.Hs.eg.db, keys=GoVect,
-                     cols=geneIDtype, keytype="GO")
+                     columns=geneIDtype, keytype="GO")
   }
   # rm NAs
   annots <- annots[!is.na(annots[,4]),]
+  if(length(type) == 1) {
+    annots <- annots[ annots$ONTOLOGY == "BP",]
+  }
+  data.frame(GeneSet=annots$GO, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
+}
+
+                          
+                          
+### OLD
+quickGS <- function(selGeneList, geneIDtype = "ENSEMBL",  fullGeneList = "", 
+                    organism = c("mouse", "human"), minGSsize = 5, topNSig = 10) {
+
   
   uniqGeneID <- unique(annots[,4])
   if (fullGeneList == "") {
