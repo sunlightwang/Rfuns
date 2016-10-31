@@ -25,7 +25,35 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   data.frame(GeneSet=annots$GO, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
 
-                          
+GS_enrich <- function(GeneList, bgGeneList, annots, padj_cutoff=0.05) { 
+  uniqGeneID <- unique(annots$Gene)
+  totalN <- length(intersect(bgGeneList, uniqGeneID))
+  SelM <- length(intersect(GeneList, uniqGeneID))
+  nm <- do.call(rbind, 
+                tapply(1:nrow(annots), as.factor(annots$GeneSet), 
+                       function(rows) {
+                         list_n <- length(intersect(bgGeneList, annots$Gene))
+                         sel_m <- length(intersect(GeneList, annots$Gene))
+                         enrich_fold <- sel_m / list_n / (SelM / totalN)
+                         return(c(list_n, sel_m, enrich_fold))
+                       }) )
+  nm <- nm[ nm[,1] >= 10 & nm[,2] >= 5, ]
+  colnames(nm) <- c("bgHit", "Hit", "EnrichFold")
+  ## white ball: in list
+  ## black ball: out of list
+  m <- SelM # total white balls
+  n <- totalN - SelM # total black balls 
+  q <- nm[,2] # selected white balls
+  k <- nm[,1] # total selected bass
+  pval <- phyper(q, m, n, k, lower.tail=FALSE)
+  padj <- p.adjust(pval, method="fdr")
+  result <- data.frame(nm, pval=pval,padj=padj)
+  result <- result[order(padj),]
+  desc <- unique(data.frame(annots$GeneSet, annots$Desc))
+  rownames(desc) <- desc$annots.GeneSet
+  result <- data.frame(result, desc=as.character(noquote(desc[rownames(result),2)))
+  result[result$padj < padj_cutoff, ]
+}                          
                           
 ### OLD
 quickGS <- function(selGeneList, geneIDtype = "ENSEMBL",  fullGeneList = "", 
