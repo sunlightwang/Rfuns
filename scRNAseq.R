@@ -130,10 +130,10 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
       Upper.outlier <- Upper + outlier.coef * IQR
       Lower.outlier <- Lower - outlier.coef * IQR
       gene_cnt <- gene_cnt[gene_cnt_log2 > Lower.outlier & gene_cnt_log2 < Upper.outlier]
-      data.frame(gene_mean=mean(gene_cnt), gene_var=var(gene_cnt))
+      c(mean(gene_cnt), var(gene_cnt))
     })
-    means.Gene <- r$gene_mean
-    vars.Gene <- r$gene_var
+    means.Gene <- r[1,]
+    vars.Gene <-  r[2,]
   } else {
     means.Gene <- rowMeans( Gene.cnt.norm )
     vars.Gene <- rowVars( Gene.cnt.norm )
