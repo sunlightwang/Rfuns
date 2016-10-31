@@ -107,7 +107,7 @@ Count.norm <- function(counts) {
   t( t(counts) / counts.sf )
 }
 
-gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T) {
+gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outlier.rm=F, outlier.coef=5) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
   sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
@@ -117,6 +117,15 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T) {
     winsorization <- function(vec) { sec_max <- sort(vec,decreasing=T)[2]; vec[which.max(vec)] <- sec_max; vec}
     ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
     Gene.cnt.norm <- t(apply(Gene.cnt.norm, 1, winsorization))
+  }
+  if(outlier.rm) { 
+    Gene.cnt.norm.log2 <- log2(1+Gene.cnt.norm)
+    Upper <- quantile(Gene.cnt.norm.log2, 3/4)
+    Lower <- quantile(Gene.cnt.norm.log2, 1/4)
+    IQR <- Upper - Lower
+    Upper.outlier <- Upper + outlier.coef * IQR
+    Lower.outlier <- Lower - outlier.coef * IQR
+    Gene.cnt.norm <- Gene.cnt.norm[Gene.cnt.norm.log2 > Lower.outlier & Gene.cnt.norm.log2 < Upper.outlier]
   }
   means.ERCC <- rowMeans( ERCC.cnt.norm )
   vars.ERCC <- rowVars( ERCC.cnt.norm )
