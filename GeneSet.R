@@ -33,8 +33,8 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   nm <- do.call(rbind, 
                 tapply(1:nrow(annots), as.factor(annots$GeneSet), 
                        function(rows) {
-                         list_n <- length(intersect(bgGeneList, annots$Gene))
-                         sel_m <- length(intersect(GeneList, annots$Gene))
+                         list_n <- length(intersect(bgGeneList, annots$Gene[rows]))
+                         sel_m <- length(intersect(GeneList, annots$Gene[rows]))
                          enrich_fold <- sel_m / list_n / (SelM / totalN)
                          return(c(list_n, sel_m, enrich_fold))
                        }) )
