@@ -25,8 +25,9 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   data.frame(GeneSet=annots$GO, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
 
-GS_enrich <- function(GeneList, bgGeneList, annots, padj_cutoff=0.05) { 
+GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10) { 
   uniqGeneID <- unique(annots$Gene)
+  if(is.null(bgGeneList)) {bgGeneList <- uniqGeneID}
   totalN <- length(intersect(bgGeneList, uniqGeneID))
   SelM <- length(intersect(GeneList, uniqGeneID))
   nm <- do.call(rbind, 
@@ -37,7 +38,7 @@ GS_enrich <- function(GeneList, bgGeneList, annots, padj_cutoff=0.05) {
                          enrich_fold <- sel_m / list_n / (SelM / totalN)
                          return(c(list_n, sel_m, enrich_fold))
                        }) )
-  nm <- nm[ nm[,1] >= 10 & nm[,2] >= 5, ]
+  nm <- nm[ nm[,1] >= minBgHit & nm[,2] >= minHit, ]
   colnames(nm) <- c("bgHit", "Hit", "EnrichFold")
   ## white ball: in list
   ## black ball: out of list
@@ -55,40 +56,3 @@ GS_enrich <- function(GeneList, bgGeneList, annots, padj_cutoff=0.05) {
   result[result$padj < padj_cutoff, ]
 }                          
                           
-### OLD
-quickGS <- function(selGeneList, geneIDtype = "ENSEMBL",  fullGeneList = "", 
-                    organism = c("mouse", "human"), minGSsize = 5, topNSig = 10) {
-
-  
-  uniqGeneID <- unique(annots[,4])
-  if (fullGeneList == "") {
-    totalN <- length(uniqGeneID)
-  } else {
-    totalN <- length(intersect(fullGeneList, uniqGeneID))
-  }
-  SelM <- length(intersect(selGeneList, uniqGeneID))
-  nm <- do.call(rbind, 
-                tapply(1:nrow(annots), as.factor(annots$GO), 
-                       function(rows) {
-                         if(fullGeneList == "") {
-                           list_n <- length(unique(annots[rows,4]))
-                         } else { 
-                           list_n <- length(intersect(fullGeneList, annots[rows,4]))
-                         } 
-                         sel_m <- length(intersect(selGeneList, annots[rows,4]))
-                         return(c(list_n, sel_m))
-                       }) )
-  nm <- nm[ nm[,1] >= minGSsize, ]
-  colnames(nm) <- c("GSsize", "Hit")
-  ## white ball: in list
-  ## black ball: out of list
-  m <- SelM # total white balls
-  n <- totalN - SelM # total black balls 
-  q <- nm[,2] # selected white balls
-  k <- nm[,1] # total selected bass
-  pval <- phyper(q, m, n, k, lower.tail=FALSE)
-  result <- cbind(nm, pval)
-  result <- result[order(pval)[1:topNSig],]
-  terms <- sapply(rownames(result), function(X) Term(GoTerms[[which(names(GoTerms)==X)]]) )
-  cbind(result, noquote(terms))
-}
