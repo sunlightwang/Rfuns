@@ -12,11 +12,11 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
 {
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
-  r <- abs(cor(x[!is.na(x) & !is.na(y) & !is.infinite(x) & !is.infinite(y)], y[!is.na(x) & !is.na(y) & !is.infinite(x) & !is.infinite(y)]))
+  r <- cor(x[!is.na(x) & !is.na(y) & !is.infinite(x) & !is.infinite(y)], y[!is.na(x) & !is.na(y) & !is.infinite(x) & !is.infinite(y)])
   txt <- format(c(r, 0.123456789), digits = digits)[1]
   txt <- paste0(prefix, txt)
   if(missing(cex.cor)) cex.cor <- 0.68/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * (r+1)/2 )
+  text(0.5, 0.5, txt, cex = cex.cor * (abs(r)+1)/2 )
 }
 
 panel.smooth <- function(x, y, col = par("col"), pch = par("pch"), cex = 1, col.smooth = "red", span = 2/3, iter = 3, ...) 
