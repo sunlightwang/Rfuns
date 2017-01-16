@@ -191,7 +191,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcu
     segments( means.ERCC[useForFit], cv2.ERCC[useForFit],
               means.ERCC[useForFit], fit$fitted.values, col="gray" )
     legend("bottomleft", legend=c(paste0("a0: ", signif(coefficients(fit)["a0"], 3)), 
-                                  pasteo("a1tilde: ", signif(coefficients(fit)["a1tilde"], 3)),
+                                  paste0("a1tilde: ", signif(coefficients(fit)["a1tilde"], 3)),
                                   paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
   }
   ######
