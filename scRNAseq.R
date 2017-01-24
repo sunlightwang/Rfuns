@@ -173,8 +173,10 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     ERCC.cnt.norm <- ERCC.cnt
     Gene.cnt.norm <- Gene.cnt
   } else { 
-    sf.ERCC <- colSums(ERCC.cnt) / ncol(ERCC.cnt)
-    sf.Gene <- colSums(Gene.cnt) / ncol(Gene.cnt)
+    mean.ERCC <- colMeans(ERCC.cnt)
+    mean.Gene <- colMeans(Gene.cnt)
+    sf.ERCC <- mean.ERCC / mean(mean.ERCC)
+    sf.Gene <- mean.Gene / mean(mean.Gene)
     ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
     Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
   }
