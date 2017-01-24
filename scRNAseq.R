@@ -167,7 +167,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
     ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
     Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
-  } elsif (normalization == "none") { 
+  } else if (normalization == "none") { 
     sf.ERCC <- rep(1, ncol(ERCC.cnt))
     sf.Gene <- rep(1, ncol(Gene.cnt))
     ERCC.cnt.norm <- ERCC.cnt
