@@ -159,12 +159,26 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
   return(Gene.bio_var)
 } 
 
-HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
+HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "total"), minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
-  sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
-  sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
-  ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
-  Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
+  normalization <- match.arg(normalization, c("sizefactor", "none", "total"))
+  if(normalization == "sizefactor") {
+    sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
+    sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
+    ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
+    Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
+  } elsif (normalization == "none") { 
+    sf.ERCC <- rep(1, ncol(ERCC.cnt))
+    sf.Gene <- rep(1, ncol(Gene.cnt))
+    ERCC.cnt.norm <- ERCC.cnt
+    Gene.cnt.norm <- Gene.cnt
+  } else { 
+    sf.ERCC <- colSums(ERCC.cnt)
+    sf.Gene <- colSums(Gene.cnt)
+    ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
+    Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
+  }
+  
   if(winsorize) { 
     winsorization <- function(vec) { sec_max <- sort(vec,decreasing=T)[2]; vec[which.max(vec)] <- sec_max; vec}
     ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
