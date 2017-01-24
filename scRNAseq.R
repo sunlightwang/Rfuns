@@ -159,9 +159,9 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
   return(Gene.bio_var)
 } 
 
-HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "total"), minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
+HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
-  normalization <- match.arg(normalization, c("sizefactor", "none", "total"))
+  normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
   if(normalization == "sizefactor") {
     sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
     sf.Gene <- estimateSizeFactorsForMatrix( Gene.cnt )
@@ -173,8 +173,8 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     ERCC.cnt.norm <- ERCC.cnt
     Gene.cnt.norm <- Gene.cnt
   } else { 
-    sf.ERCC <- colSums(ERCC.cnt)
-    sf.Gene <- colSums(Gene.cnt)
+    sf.ERCC <- colSums(ERCC.cnt) / ncol(ERCC.cnt)
+    sf.Gene <- colSums(Gene.cnt) / ncol(Gene.cnt)
     ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
     Gene.cnt.norm <- t( t(Gene.cnt) / sf.Gene )
   }
