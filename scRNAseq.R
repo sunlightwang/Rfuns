@@ -169,9 +169,10 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
   } else if (normalization == "none") { 
     sf.ERCC <- rep(1, ncol(ERCC.cnt))
     ERCC.cnt.norm <- ERCC.cnt
-  } else { 
-    mean.ERCC <- colMeans(ERCC.cnt)
-    sf.ERCC <- mean.ERCC / mean(mean.ERCC)
+  } else { # mean
+    # mean.ERCC <- colMeans(ERCC.cnt)
+    # sf.ERCC <- mean.ERCC / mean(mean.ERCC)
+    sf.ERCC <- colSums(ERCC.cnt)
     ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
   }
   if(winsorize) { 
@@ -202,6 +203,9 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
     legend("bottomleft", legend=c(paste0("a0: ", signif(coefficients(fit)["a0"], 3)), 
                                   paste0("a1tilde: ", signif(coefficients(fit)["a1tilde"], 3)),
                                   paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
+    ### theoretical model
+    a <- (1 + seq_effi) * mean(1 / sf.ERCC) 
+    lines( xg, - a + a/xg, col="green", lty=2 )
   }
   return()
 } 
