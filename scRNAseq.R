@@ -159,6 +159,53 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
   return(Gene.bio_var)
 } 
 
+
+ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), 
+                             winsorize=T, seq_effi=0.9) {
+  normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
+  if(normalization == "sizefactor") {
+    sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
+    ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
+  } else if (normalization == "none") { 
+    sf.ERCC <- rep(1, ncol(ERCC.cnt))
+    ERCC.cnt.norm <- ERCC.cnt
+  } else { 
+    mean.ERCC <- colMeans(ERCC.cnt)
+    sf.ERCC <- mean.ERCC / mean(mean.ERCC)
+    ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
+  }
+  if(winsorize) { 
+    winsorization <- function(vec) { sec_max <- sort(vec,decreasing=T)[2]; vec[which.max(vec)] <- sec_max; vec}
+    ERCC.cnt.norm <- t(apply(ERCC.cnt.norm, 1, winsorization))
+  }
+  means.ERCC <- rowMeans( ERCC.cnt.norm )
+  vars.ERCC <- rowVars( ERCC.cnt.norm )
+  cv2.ERCC <- vars.ERCC / means.ERCC^2
+  # minimum mean value 
+  minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > 1 ) ], 0.75) )
+  useForFit<- means.ERCC >= minMeanForFit
+  fit <- glmgam.fit( cbind( a0 = 1, a1tilde = 1/means.ERCC[useForFit] ), cv2.ERCC[useForFit] )
+  residual <- var( log( fitted.values(fit) ) - log( cv2.ERCC[useForFit] ) )
+  total <- var( log( cv2.ERCC[useForFit] ) )
+  # # explained variances
+  # 1 - residual / total
+  if(plot) {
+    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-4, 1e5 ), ylim = c( 1e-4, 100) )
+    axis( 1, 10^(-4:5), c("0.0001","0.001", "0.01", "0.1", "1", "10", "100", "1000",
+                           expression(10^4), expression(10^5) ) )
+    axis( 2, 10^(-4:2), c("0.0001", "0.001", "0.01", "0.1", "1", "10" ,"100"), las=2 )
+    abline( h=10^(-4:2), v=10^(-4:5), col="#D0D0D0", lwd=2 )
+    xg <- 10^seq( -4, 5, length.out=100 )
+    lines( xg, coefficients(fit)["a0"] + coefficients(fit)["a1tilde"]/xg )
+    segments( means.ERCC[useForFit], cv2.ERCC[useForFit],
+              means.ERCC[useForFit], fit$fitted.values, col="gray" )
+    legend("bottomleft", legend=c(paste0("a0: ", signif(coefficients(fit)["a0"], 3)), 
+                                  paste0("a1tilde: ", signif(coefficients(fit)["a1tilde"], 3)),
+                                  paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
+  }
+  return()
+} 
+
 HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
