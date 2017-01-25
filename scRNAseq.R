@@ -191,7 +191,7 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
   # # explained variances
   # 1 - residual / total
   if(plot) {
-    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-4, 1e5 ), ylim = c( 1e-4, 100) )
+    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-4, 1e5 ), ylim = c( 1e-4, 100),  xaxt="n", yaxt="n" )
     axis( 1, 10^(-4:5), c("0.0001","0.001", "0.01", "0.1", "1", "10", "100", "1000",
                            expression(10^4), expression(10^5) ) )
     axis( 2, 10^(-4:2), c("0.0001", "0.001", "0.01", "0.1", "1", "10" ,"100"), las=2 )
