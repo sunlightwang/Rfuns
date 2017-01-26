@@ -205,8 +205,8 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
                                   paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
     ### theoretical model
     a <- (1 + seq_effi) * mean(1 / sf.ERCC) 
-    null <- sapply(a, function(x) lines( xg, - x + x/xg, col="green", lty=2 ) )
-    null <- sapply(a, function(x) lines( xg, x/xg, col="orange", lty=2 ) )
+    null <- sapply(1:length(a), function(i) lines( xg, - a[i] + a[i]/xg, col=1+i, lty=2 ) )
+    null <- sapply(1:length(a), function(i) lines( xg, a[i]/xg, col=1+i, lty=1 ) )
   }
   return()
 } 
