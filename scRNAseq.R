@@ -187,7 +187,7 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
     minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > 0.3 ) ], 0.8) )
     useForFit<- means.ERCC >= minMeanForFit
   } else {
-    useForFit <- rep(TURE, length(cv2.ERCC))
+    useForFit <- rep(TRUE, length(cv2.ERCC))
   }
   fit <- glmgam.fit( cbind( a0 = 1, a1tilde = 1/means.ERCC[useForFit] ), cv2.ERCC[useForFit] )
   residual <- var( log( fitted.values(fit) ) - log( cv2.ERCC[useForFit] ) )
