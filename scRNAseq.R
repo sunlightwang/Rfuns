@@ -162,7 +162,7 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
 
 ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "total"), lowCV4fit=TRUE, 
                              winsorize=T, seq_effi=c(0.7, 0.5, 0.3)) {
-  normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
+  normalization <- match.arg(normalization, c("sizefactor", "none", "total"))
   if(normalization == "sizefactor") {
     sf.ERCC <- estimateSizeFactorsForMatrix( ERCC.cnt )
     ERCC.cnt.norm <- t( t(ERCC.cnt) / sf.ERCC )
