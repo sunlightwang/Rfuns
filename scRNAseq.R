@@ -160,7 +160,7 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
 } 
 
 
-ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), 
+ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), lowCV4fit=TRUE, 
                              winsorize=T, seq_effi=c(0.7, 0.5, 0.3)) {
   normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
   if(normalization == "sizefactor") {
@@ -182,9 +182,13 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
   means.ERCC <- rowMeans( ERCC.cnt.norm )
   vars.ERCC <- rowVars( ERCC.cnt.norm )
   cv2.ERCC <- vars.ERCC / means.ERCC^2
-  # minimum mean value 
-  minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > 1 ) ], 0.75) )
-  useForFit<- means.ERCC >= minMeanForFit
+  if(lowCV4fit) {
+    # minimum mean value 
+    minMeanForFit <- unname( quantile( means.ERCC[ which( cv2.ERCC > 0.3 ) ], 0.8) )
+    useForFit<- means.ERCC >= minMeanForFit
+  } else {
+    useForFit <- rep(TURE, length(cv2.ERCC))
+  }
   fit <- glmgam.fit( cbind( a0 = 1, a1tilde = 1/means.ERCC[useForFit] ), cv2.ERCC[useForFit] )
   residual <- var( log( fitted.values(fit) ) - log( cv2.ERCC[useForFit] ) )
   total <- var( log( cv2.ERCC[useForFit] ) )
