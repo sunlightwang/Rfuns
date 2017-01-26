@@ -213,7 +213,7 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
     legend("topright", c(paste0("Binomial+SeqEff=",seq_effi), paste0("Poisson+SeqEff=",seq_effi)), lty=rep(1:2, each=length(seq_effi)), 
            col=2+1:length(seq_effi), bty="n")
   }
-  if(plot & normalization == "none") {
+  if(plot & normalization in c("sizefactor", "none")) {
     plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-3, 10000 ), ylim = c( 1e-2, 100),  xaxt="n", yaxt="n" )
     axis( 1, 10^(-3:4), c("0.001", "0.01", "0.1", "1", "10", "100", "1000", expression(10^4)))
     axis( 2, 10^(-2:2), c("0.01", "0.1", "1", "10" ,"100"), las=2 )
