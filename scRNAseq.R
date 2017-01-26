@@ -160,7 +160,7 @@ gene.biovar <- function(ERCC.cnt, Gene.cnt, minBiolDisp=0.5^2, winsorize=T, outl
 } 
 
 
-ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), lowCV4fit=TRUE, 
+ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "none", "total"), lowCV4fit=TRUE, 
                              winsorize=T, seq_effi=c(0.7, 0.5, 0.3)) {
   normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
   if(normalization == "sizefactor") {
@@ -169,7 +169,7 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
   } else if (normalization == "none") { 
     sf.ERCC <- rep(1, ncol(ERCC.cnt))
     ERCC.cnt.norm <- ERCC.cnt
-  } else { # mean
+  } else { # total
     # mean.ERCC <- colMeans(ERCC.cnt)
     # sf.ERCC <- mean.ERCC / mean(mean.ERCC)
     sf.ERCC <- colSums(ERCC.cnt)
@@ -194,28 +194,43 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
   total <- var( log( cv2.ERCC[useForFit] ) )
   # # explained variances
   # 1 - residual / total
-  if(plot) {
-    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-4, 1e5 ), ylim = c( 1e-4, 100),  xaxt="n", yaxt="n" )
-    axis( 1, 10^(-4:5), c("0.0001","0.001", "0.01", "0.1", "1", "10", "100", "1000",
-                           expression(10^4), expression(10^5) ) )
-    axis( 2, 10^(-4:2), c("0.0001", "0.001", "0.01", "0.1", "1", "10" ,"100"), las=2 )
-    abline( h=10^(-4:2), v=10^(-4:5), col="#D0D0D0", lwd=2 )
-    xg <- 10^seq( -4, 5, length.out=100 )
+  if(plot & normalization == "total") {
+    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-5, 1 ), ylim = c( 1e-3, 100),  xaxt="n", yaxt="n" )
+    axis( 1, 10^(-5:1), c(expression(10^-5),expression(10^-4), "0.001", "0.01", "0.1", "1", "10"))
+    axis( 2, 10^(-3:2), c("0.001", "0.01", "0.1", "1", "10" ,"100"), las=2 )
+    abline( h=10^(-5:5), v=10^(-5:5), col="#D0D0D0", lwd=2 )
+    xg <- 10^seq( -5, 5, length.out=101 )
     lines( xg, coefficients(fit)["a0"] + coefficients(fit)["a1tilde"]/xg )
     segments( means.ERCC[useForFit], cv2.ERCC[useForFit],
               means.ERCC[useForFit], fit$fitted.values, col="gray" )
     legend("bottomleft", legend=c(paste0("a0: ", signif(coefficients(fit)["a0"], 3)), 
-                                  paste0("a1tilde: ", signif(coefficients(fit)["a1tilde"], 3)),
+                                  paste0("a1: ", signif(coefficients(fit)["a1tilde"], 3)),
                                   paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
     ### theoretical model
     a <- (1 + seq_effi) * mean(1 / sf.ERCC) 
-    null <- sapply(1:length(a), function(i) lines( xg, - a[i] + a[i]/xg, col=1+i, lty=2 ) )
-    null <- sapply(1:length(a), function(i) lines( xg, a[i]/xg, col=1+i, lty=1 ) )
+    null <- sapply(1:length(a), function(i) lines( xg, - a[i] + a[i]/xg, col=2+i, lty=1 ) )
+    null <- sapply(1:length(a), function(i) lines( xg, a[i]/xg, col=2+i, lty=2 ) )
+    legend("topright", c(paste0("Binomial+SeqEff=",seq_effi), paste0("Poisson+SeqEff=",seq_effi)), lty=rep(1:2, each=length(seq_effi)), 
+           col=2+1:length(seq_effi), bty="n")
+  }
+  if(plot & normalization == "none") {
+    plot( means.ERCC, cv2.ERCC, log="xy", col=1+useForFit, main="", xlim = c( 1e-3, 4 ), ylim = c( 1e-2, 100),  xaxt="n", yaxt="n" )
+    axis( 1, 10^(-3:4), c("0.001", "0.01", "0.1", "1", "10", "100", expression(10^4)))
+    axis( 2, 10^(-2:2), c("0.01", "0.1", "1", "10" ,"100"), las=2 )
+    abline( h=10^(-5:5), v=10^(-5:5), col="#D0D0D0", lwd=2 )
+    xg <- 10^seq( -5, 5, length.out=101 )
+    lines( xg, coefficients(fit)["a0"] + coefficients(fit)["a1tilde"]/xg )
+    segments( means.ERCC[useForFit], cv2.ERCC[useForFit],
+              means.ERCC[useForFit], fit$fitted.values, col="gray" )
+    legend("bottomleft", legend=c(paste0("a0: ", signif(coefficients(fit)["a0"], 3)), 
+                                  paste0("a1: ", signif(coefficients(fit)["a1tilde"], 3)),
+                                  paste0("explained variances: ", signif(1 - residual / total, 3))), bty="n")
   }
   return()
 } 
 
-HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), minBiolDisp=0.5^2, padjcutoff=0.1, winsorize=T, topN=NULL) {
+HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), minBiolDisp=0.5^2, 
+                           padjcutoff=0.1, winsorize=T, topN=NULL) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
   if(normalization == "sizefactor") {
