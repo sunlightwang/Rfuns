@@ -230,7 +230,7 @@ ERCC_noise_model <- function(ERCC.cnt, plot=T, normalization=c("sizefactor", "no
 } 
 
 HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefactor", "none", "mean"), minBiolDisp=0.5^2, 
-                           padjcutoff=0.1, winsorize=T, topN=NULL) {
+                           padjcutoff=0.1, winsorize=T, topN=NULL, HVGnames=F) {
   if( is.null(ERCC.cnt) ) { ERCC.cnt <- Gene.cnt }
   normalization <- match.arg(normalization, c("sizefactor", "none", "mean"))
   if(normalization == "sizefactor") {
@@ -313,6 +313,9 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     } else {
       points( means.Gene, cv2.Gene, pch=20, cex=.2,
             col = ifelse( names(means.Gene) %in% HVG, "#C0007090", "#70500040" ) )
+    }
+    if(HVGnames) { 
+      text(means.Gene[HVG], cv2.Gene[HVG], label=HVG, cex=.2)
     }
     # Add the technical noise fit, as before
     xg <- 10^seq( -2, 6, length.out=1000 )
