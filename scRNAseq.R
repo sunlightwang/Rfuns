@@ -315,7 +315,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
             col = ifelse( names(means.Gene) %in% HVG, "#C0007090", "#70500040" ) )
     }
     if(HVGnames) { 
-      text(means.Gene[HVG], cv2.Gene[HVG], label=HVG, cex=.2)
+      text(means.Gene[HVG], cv2.Gene[HVG], label=HVG, cex=0.5)
     }
     # Add the technical noise fit, as before
     xg <- 10^seq( -2, 6, length.out=1000 )
