@@ -102,8 +102,18 @@ geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
   axis( 2, -.35, "\\\\", tick=FALSE, line=-.7 )
 }
 
-Count.norm <- function(counts) {
-  counts.sf <- estimateSizeFactorsForMatrix( counts )
+Count.norm <- function(counts, method=c("sizefactor", "mean", "total","none")) {
+  method <- match.arg(method, c("sizefactor", "mean", "total", "none"))
+  if(method == "sizefactor") {
+    counts.sf <- estimateSizeFactorsForMatrix( counts )
+  } else if(method == "mean") { 
+    mean.counts <- colMeans(counts)
+    counts.sf <- mean.counts / mean ( mean.counts )
+  } else if(method == "total") { 
+    counts.sf <- colSums(counts) 
+  } else { 
+    counts.sf <- rep(1, ncol(counts))
+  }
   t( t(counts) / counts.sf )
 }
 
