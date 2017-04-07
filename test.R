@@ -28,3 +28,27 @@ cart2pol <- function(data) {
 GP.pole <- cart2pol(pca.rotated.scaled)
 plot(GP.pole)
 hist(GP.pole[,1])
+
+  ####
+pol2cart <- function(data) {
+  do.call(rbind, sapply(1:nrow(data), function(x) {
+    xx <- data[x,1] * cos(data[x,2])
+    yy <- data[x,1] * sin(data[x,2])
+    return(cbind(xx, yy))
+  }, simplify=F))
+}
+
+r <- rnorm(1000,1,0.2)
+th <- runif(1000, -pi, pi)
+circ <- t(pol2cart(cbind(r,th)))
+plot(t(circ))
+circ.scaled <- center.scale( circ )
+plot(t(circ.scaled))
+pca <- prcomp(t(circ.scaled))
+pca.rotated <- t(circ.scaled) %*% pca$rotation
+pca.rotated.scaled <- t( t(pca.rotated) / pca$sdev )
+plot(pca.rotated.scaled)
+abline(v=0,h=0,lty=2,col="grey80")
+GP.pole <- cart2pol(pca.rotated.scaled)
+plot(GP.pole)
+hist(GP.pole[,1])
