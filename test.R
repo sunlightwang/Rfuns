@@ -29,7 +29,7 @@ circ_dect <- function(GP) {
   pca.rotated <- t(GP.scaled) %*% pca$rotation
   pca.rotated.scaled <- t( t(pca.rotated) / pca$sdev )
   #plot(pca.rotated.scaled)
-  abline(v=0,h=0,lty=2,col="grey80")
+  #abline(v=0,h=0,lty=2,col="grey80")
   GP.pole <- cart2pol(pca.rotated.scaled)
   #plot(GP.pole)
   #hist(GP.pole[,1])
