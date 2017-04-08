@@ -21,24 +21,31 @@ pol2cart <- function(data) {
   }, simplify=F))
 }
 
-function() {
+circ_dect <- function(GP) {
+  GP.scaled <- center.scale( GP )
+  #plot(t(GP.scaled))
+  pca <- prcomp(t(GP.scaled)) 
+  # pca$x = t(GP.scaled) %*% pca$rotation
+  pca.rotated <- t(GP.scaled) %*% pca$rotation
+  pca.rotated.scaled <- t( t(pca.rotated) / pca$sdev )
+  #plot(pca.rotated.scaled)
+  abline(v=0,h=0,lty=2,col="grey80")
+  GP.pole <- cart2pol(pca.rotated.scaled)
+  #plot(GP.pole)
+  #hist(GP.pole[,1])
+  GP.pole
+}
+
+circ_simu <- function(seed=1000) {
+  set.seed(seed)
   G1 <- rnorm(1000)
   G2 <- rnorm(1000)*20
   GP <- rbind(G1, G2)
   plot(t(GP))
-  GP.scaled <- center.scale( GP )
-  plot(t(GP.scaled))
-  pca <- prcomp(t(GP.scaled)) 
-  # pca$x = t(GP.scaled) %*% pca$rotation
+  GP
+}
 
-  pca.rotated <- t(GP.scaled) %*% pca$rotation
-  pca.rotated.scaled <- t( t(pca.rotated) / pca$sdev )
-  plot(pca.rotated.scaled)
-  abline(v=0,h=0,lty=2,col="grey80")
-  GP.pole <- cart2pol(pca.rotated.scaled)
-  plot(GP.pole)
-  hist(GP.pole[,1])
-
+test <- function() {
   ####
   r <- rnorm(1000,1,0.2)
   th <- runif(1000, -pi, pi)
