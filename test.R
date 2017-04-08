@@ -1,6 +1,7 @@
 library(matrixStats)
 
-center.scale <- function(data)  { (data - rowMeans(data)) / sqrt(rowVars(data)) }
+center.scale <- function(data)  { 
+  (data - rowMeans(data)) / sqrt(rowVars(data)) }
 
 cart2pol <- function(data) {
   do.call(rbind, sapply(1:nrow(data), function(x) {
