@@ -1,6 +1,6 @@
 library(matrixStats)
 
-center.scale <- function(data)  { 
+center.scale <- function(data)  { ###TODO: center scale maybe not good for asymmetric situation; alt. 5-95% interval rescale: check PCA..
   (data - rowMeans(data)) / sqrt(rowVars(data)) }
 
 cart2pol <- function(data) {
