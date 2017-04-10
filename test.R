@@ -21,7 +21,7 @@ pol2cart <- function(data) {
   }, simplify=F))
 }
 
-circ_dect <- function(GP) {
+cycG_dect <- function(GP) {
   GP.scaled <- center.scale( GP )
   #plot(t(GP.scaled))
   pca <- prcomp(t(GP.scaled)) 
@@ -36,7 +36,7 @@ circ_dect <- function(GP) {
   GP.pole
 }
 
-circ_simu <- function(seed=1000) {
+cycG_simu <- function(seed=1000) {
   set.seed(seed)
   G1 <- rnorm(1000)
   G2 <- rnorm(1000)*20
