@@ -46,6 +46,7 @@ cycG_dect_wrapper <- function(data, topN=100) { # data normalized, row - genes, 
   
   for(i in 1:(nrow(data)-1)) { 
     for(j in (i+1):nrow(data)) {
+      n <- n + 1
       #print(paste(i,j))
       cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
       cmp[n] <- paste0(gene.names[i], ".vs.", gene.names[j])
