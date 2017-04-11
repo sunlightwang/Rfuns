@@ -1,5 +1,5 @@
 library(matrixStats)
-
+#TODO: filter out bimodel genes first
 center.scale <- function(data)  { ###TODO: center scale maybe not good for asymmetric situation; alt. 5-95% interval rescale: check PCA..
   (data - rowMeans(data)) / sqrt(rowVars(data)) }
 
@@ -36,6 +36,36 @@ cycG_dect <- function(GP) {
   GP.pole
 }
 
+cycG_dect_wrapper <- function(data, topN=100) { # data normalized, row - genes, col - samples
+  cmp.no <- choose(nrow(data), 2)
+  cmp <- rep(NA, cmp.no)
+  pole1 <- matrix(NA, nrow=cmp.no, ncol=ncol(data))
+  pole2 <- matrix(NA, nrow=cmp.no, ncol=ncol(data))
+  gene.names <- rownames(data)
+  n <- 0
+  
+  for(i in 1:(nrow(data)-1)) { 
+    for(j in (i+1):nrow(data)) {
+      #print(paste(i,j))
+      cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
+      cmp[n] <- paste0(gene.names[i], ".vs.", gene.names[j])
+      pole1[n,] <- cycGD.res[,1]
+      pole2[n,] <- cycGD.res[,2]
+    }
+  }
+  rownames(pole1) <- cmp
+  colnames(pole1) <- colnames(data)
+  rownames(pole2) <- cmp
+  colnames(pole2) <- colnames(data)
+  #write.table(pole1, "H1.pole1.txt", sep="\t", quote=F)
+  #write.table(pole2, "H1.pole2.txt", sep="\t", quote=F)
+  cv <- sqrt(apply(pole1, 1, var)) / apply(pole1, 1, mean)
+  cmp.sel <- names(head(sort(cv), n=topN))
+  g1 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[1])
+  g2 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[3])
+  for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
+}
+
 cycG_simu <- function(seed=1000) {
   set.seed(seed)
   G1 <- rnorm(1000)
@@ -45,7 +75,7 @@ cycG_simu <- function(seed=1000) {
   GP
 }
 
-test <- function() {
+cycG_simu2 <- function() {
   ####
   r <- rnorm(1000,1,0.2)
   th <- runif(1000, -pi, pi)
