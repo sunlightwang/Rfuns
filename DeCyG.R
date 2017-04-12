@@ -68,7 +68,7 @@ cycG_dect_wrapper <- function(data, topN=100) { # data normalized, row - genes, 
 }
 
                
-cycG_dect_wrapper.p <- function(data, ntopN=100, p=8) { # data normalized, row - genes, col - samples
+cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - genes, col - samples
   require(doParallel)
   cl <- makeCluster(p)
   registerDoParallel(cl)
