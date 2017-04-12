@@ -68,7 +68,10 @@ cycG_dect_wrapper <- function(data, topN=100) { # data normalized, row - genes, 
 }
 
                
-cycG_dect_wrapper.p <- function(data, topN=100) { # data normalized, row - genes, col - samples
+cycG_dect_wrapper.p <- function(data, ntopN=100, p=8) { # data normalized, row - genes, col - samples
+  require(doParallel)
+  cl <- makeCluster(p)
+  registerDoParallel(cl)
   cmp.no <- choose(nrow(data), 2)
   gene.names <- rownames(data)
   cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c") %dopar% {
