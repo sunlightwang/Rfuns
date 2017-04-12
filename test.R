@@ -74,7 +74,7 @@ cycG_dect_wrapper.p <- function(data, ntopN=100, p=8) { # data normalized, row -
   registerDoParallel(cl)
   cmp.no <- choose(nrow(data), 2)
   gene.names <- rownames(data)
-  cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c") %dopar% {
+  cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c", .packages='cycG_dect') %dopar% {
     for(j in (i+1):nrow(data)) {
       cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
       cmp <- paste0(gene.names[i], ".vs.", gene.names[j])
