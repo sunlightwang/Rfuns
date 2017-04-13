@@ -86,8 +86,7 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
   cmp.sel <- names(head(sort(cv.vec), n=topN))
   g1 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[1])
   g2 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[3])
-  for(i in 1:topN) { plot(data[as.character(g1[i]),], data[as.character(g2[i]),], 
-                          pch=20, xlab=g1[i], ylab=g2[i]) }
+  for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
   cv.vec 
 }
     
