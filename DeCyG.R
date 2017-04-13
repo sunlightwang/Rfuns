@@ -67,29 +67,27 @@ cycG_dect_wrapper <- function(data, topN=100) { # data normalized, row - genes, 
   for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
 }
 
-               
 cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - genes, col - samples
   require(doParallel)
   cl <- makeCluster(p)
   registerDoParallel(cl)
   cmp.no <- choose(nrow(data), 2)
   gene.names <- rownames(data)
-  cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c", 
+  cv <- foreach(i = 1:(nrow(data)-1), .combine = "c", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
     for(j in (i+1):nrow(data)) {
       cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
       cmp <- paste0(gene.names[i], ".vs.", gene.names[j])
       pole1 <- cycGD.res[,1]
-      cv <- sqrt(var(pole1)) / mean(pole1)
+      sqrt(var(pole1)) / mean(pole1)
     }
   }
-  cmp.sel <- names(head(sort(cv.vec), n=topN))
+  cmp.sel <- names(head(sort(cv), n=topN))
   g1 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[1])
   g2 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[3])
   for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
-  cv.vec 
+  cv 
 }
-    
                
 cycG_simu <- function(seed=1000) {
   set.seed(seed)
