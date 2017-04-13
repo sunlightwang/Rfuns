@@ -73,20 +73,24 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
   registerDoParallel(cl)
   cmp.no <- choose(nrow(data), 2)
   gene.names <- rownames(data)
-  cv <- foreach(i = 1:(nrow(data)-1), .combine = "c", 
+  cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
+    cv <- rep(NA, nrow(data)-i)
+    n <- 0
     for(j in (i+1):nrow(data)) {
+      n <- n+1
       cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
       cmp <- paste0(gene.names[i], ".vs.", gene.names[j])
       pole1 <- cycGD.res[,1]
-      sqrt(var(pole1)) / mean(pole1)
+      cv[n] <- sqrt(var(pole1)) / mean(pole1)
     }
+    cv
   }
-  cmp.sel <- names(head(sort(cv), n=topN))
+  cmp.sel <- names(head(sort(cv.vec), n=topN))
   g1 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[1])
   g2 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[3])
   for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
-  cv 
+  cv.vec 
 }
                
 cycG_simu <- function(seed=1000) {
