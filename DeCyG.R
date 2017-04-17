@@ -101,7 +101,7 @@ cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, co
   gene.names <- rownames(data)
   results <- foreach(i = 1:(nrow(data)-1), .combine = "rbind", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
-    temp <- matrix(NA, nrow(data)-i, 8)
+    temp <- matrix(NA, nrow(data)-i, 12)
     cmp <- rep(NA, nrow(data)-i)
     n <- 0
     for(j in (i+1):nrow(data)) {
@@ -114,13 +114,13 @@ cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, co
       perm.pole1 <- perm.cycGD.res[,1] / mean(perm.cycGD.res[,1])
       temp[n, 1] <- wilcox.test(pole1, perm.pole1, alternative="greater")$p.val #wilcox.p
       temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.p
-      temp[n, 3:5] <- quantile(pole1, c(0.5, 0.25, 0.1))
-      temp[n, 6:8] <- quantile(perm.pole1, c(0.5, 0.75, 0.9))
+      temp[n, 3:7] <- quantile(pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
+      temp[n, 8:12] <- quantile(perm.pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
     }
     rownames(temp) <- cmp
     temp 
   }
-  colnames(results) <- c("wilcox.p", "ks.p", "Q50", "Q25", "Q10", "P_Q50", "P_Q75", "P_Q90")
+  colnames(results) <- c("wilcox.p", "ks.p", "Q10", "Q25", "Q50", "Q75", "Q90", "P_Q10", "P_Q25", "P_Q50", "P_Q75", "P_Q90")
   results 
 }
                
