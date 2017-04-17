@@ -117,10 +117,10 @@ cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, co
       temp[n, 3:5] <- quantile(pole1, c(0.5, 0.25, 0.1))
       temp[n, 6:8] <- quantile(perm.pole1, c(0.5, 0.75, 0.9))
     }
-    row.names(temp) <- cmp
+    rownames(temp) <- cmp
     temp 
   }
-  col.names(results) <- c("wilcox.p", "ks.p", "Q50", "Q25", "Q10", "P_Q50", "P_Q75", "P_Q90")
+  colnames(results) <- c("wilcox.p", "ks.p", "Q50", "Q25", "Q10", "P_Q50", "P_Q75", "P_Q90")
   results 
 }
                
