@@ -71,7 +71,6 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
   require(doParallel)
   cl <- makeCluster(p)
   registerDoParallel(cl)
-  cmp.no <- choose(nrow(data), 2)
   gene.names <- rownames(data)
   cv.vec <- foreach(i = 1:(nrow(data)-1), .combine = "c", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
@@ -93,6 +92,36 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
   g2 <- sapply(cmp.sel, function(x) unlist(strsplit(x,'[.]'))[3])
   for(i in 1:topN) { plot(data[g1[i],], data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i]) }
   cv.vec 
+}
+               
+cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, col - samples
+  require(doParallel)
+  cl <- makeCluster(p)
+  registerDoParallel(cl)
+  gene.names <- rownames(data)
+  results <- foreach(i = 1:(nrow(data)-1), .combine = "rbind", 
+                    .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
+    temp <- matrix(NA, nrow(data)-i, )
+    cmp <- rep(NA, nrow(data)-i)
+    n <- 0
+    for(j in (i+1):nrow(data)) {
+      n <- n+1
+      cmp[n] <- paste0(gene.names[i], ".vs.", gene.names[j])
+      cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
+      pole1 <- cycGD.res[,1] / mean(cycGD.res[,1])
+      set.seed(seed)
+      perm.cycGD.res <- cycG_dect(rbind(data[i,], sample(data[j,])))
+      perm.pole1 <- perm.cycGD.res[,1] / mean(perm.cycGD.res[,1])
+      temp[n, 1] <- wilcox.test(pole1, perm.pole1, alternative="greater")$p.val #wilcox.p
+      temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.p
+      temp[n, 3:5] <- quantile(pole1, c(0.5, 0.25, 0.1))
+      temp[n, 6:8] <- quantile(perm.pole1, c(0.5, 0.75, 0.9))
+    }
+    row.names(temp) <- cmp
+    temp 
+  }
+  col.names(results) <- c("wilcox.p", "ks.p", "Q50", "Q25", "Q10", "P_Q50", "P_Q75", "P_Q90")
+  results 
 }
                
 cycG_simu <- function(seed=1000) {
