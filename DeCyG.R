@@ -101,7 +101,7 @@ cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, co
   gene.names <- rownames(data)
   results <- foreach(i = 1:(nrow(data)-1), .combine = "rbind", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
-    temp <- matrix(NA, nrow(data)-i, )
+    temp <- matrix(NA, nrow(data)-i, 8)
     cmp <- rep(NA, nrow(data)-i)
     n <- 0
     for(j in (i+1):nrow(data)) {
