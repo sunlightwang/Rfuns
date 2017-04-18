@@ -94,7 +94,8 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
   cv.vec 
 }
                
-cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, col - samples
+cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1, 
+                      p=8, seed=9999) { # data normalized, row - genes, col - samples
   require(doParallel)
   cl <- makeCluster(p)
   registerDoParallel(cl)
@@ -107,10 +108,19 @@ cycG_perm <- function(data, p=8, seed=9999) { # data normalized, row - genes, co
     for(j in (i+1):nrow(data)) {
       n <- n+1
       cmp[n] <- paste0(gene.names[i], ".vs.", gene.names[j])
-      cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
+      if(nonexpr.filter) {
+        idx <- rep(TRUE, ncol(data))
+        if(quantile(data[i,], 0) == quantile(data[i,], nonexpr.q)) idx <- idx & data[i,] > quantile(data[i,], 0)
+        if(quantile(data[j,], 0) == quantile(data[j,], nonexpr.q)) idx <- idx & data[i,] > quantile(data[i,], 0)
+        cycGD.res <- cycG_dect(rbind(data[i,idx], data[j,idx]))
+        set.seed(seed)
+        perm.cycGD.res <- cycG_dect(rbind(data[i,idx], sample(data[j,idx])))
+      } else {
+        cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
+        set.seed(seed)
+        perm.cycGD.res <- cycG_dect(rbind(data[i,], sample(data[j,])))
+      }
       pole1 <- cycGD.res[,1] / mean(cycGD.res[,1])
-      set.seed(seed)
-      perm.cycGD.res <- cycG_dect(rbind(data[i,], sample(data[j,])))
       perm.pole1 <- perm.cycGD.res[,1] / mean(perm.cycGD.res[,1])
       temp[n, 1] <- wilcox.test(pole1, perm.pole1, alternative="greater")$p.val #wilcox.p
       temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.p
