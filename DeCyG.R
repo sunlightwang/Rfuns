@@ -96,7 +96,7 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
                
 cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1, 
                       p=8, seed=9999) { # data normalized, row - genes, col - samples
-  ret.value <- c("wilcox.p", "ks.l.p", "ks.g.p", "Q10", "Q25", "Q50", "Q75", "Q90", 
+  ret.value <- c("wilcox.p", "ks.l.p", "ks.g.p", "Rsq", "Q10", "Q25", "Q50", "Q75", "Q90", 
                  "P_Q10", "P_Q25", "P_Q50", "P_Q75", "P_Q90")
   require(doParallel)
   cl <- makeCluster(p)
@@ -117,18 +117,21 @@ cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1,
         cycGD.res <- cycG_dect(rbind(data[i,idx], data[j,idx]))
         set.seed(seed)
         perm.cycGD.res <- cycG_dect(rbind(data[i,idx], sample(data[j,idx])))
+        R <- cor(data[i,idx], data[j,idx])
       } else {
         cycGD.res <- cycG_dect(rbind(data[i,], data[j,]))
         set.seed(seed)
         perm.cycGD.res <- cycG_dect(rbind(data[i,], sample(data[j,])))
+        R <- cor(data[i,], data[j,])
       }
       pole1 <- cycGD.res[,1] / mean(cycGD.res[,1])
       perm.pole1 <- perm.cycGD.res[,1] / mean(perm.cycGD.res[,1])
       temp[n, 1] <- wilcox.test(pole1, perm.pole1, alternative="greater")$p.val #wilcox.p
       temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.l.p
       temp[n, 3]  <- ks.test(pole1, perm.pole1, alternative="greater")$p.val    #ks.g.p
-      temp[n, 4:8] <- quantile(pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
-      temp[n, 9:13] <- quantile(perm.pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
+      temp[n, 4]  <- R ^ 2                                                      #Rsq
+      temp[n, 5:9] <- quantile(pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
+      temp[n, 10:14] <- quantile(perm.pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
     }
     rownames(temp) <- cmp
     temp 
