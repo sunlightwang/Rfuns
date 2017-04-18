@@ -96,13 +96,15 @@ cycG_dect_wrapper.p <- function(data, topN=100, p=8) { # data normalized, row - 
                
 cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1, 
                       p=8, seed=9999) { # data normalized, row - genes, col - samples
+  ret.value <- c("wilcox.p", "ks.l.p", "ks.g.p", "Q10", "Q25", "Q50", "Q75", "Q90", 
+                 "P_Q10", "P_Q25", "P_Q50", "P_Q75", "P_Q90")
   require(doParallel)
   cl <- makeCluster(p)
   registerDoParallel(cl)
   gene.names <- rownames(data)
   results <- foreach(i = 1:(nrow(data)-1), .combine = "rbind", 
                     .export=ls(envir=globalenv()), .packages='matrixStats') %dopar% {
-    temp <- matrix(NA, nrow(data)-i, 12)
+    temp <- matrix(NA, nrow(data)-i, length(ret.value))
     cmp <- rep(NA, nrow(data)-i)
     n <- 0
     for(j in (i+1):nrow(data)) {
@@ -123,14 +125,15 @@ cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1,
       pole1 <- cycGD.res[,1] / mean(cycGD.res[,1])
       perm.pole1 <- perm.cycGD.res[,1] / mean(perm.cycGD.res[,1])
       temp[n, 1] <- wilcox.test(pole1, perm.pole1, alternative="greater")$p.val #wilcox.p
-      temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.p
-      temp[n, 3:7] <- quantile(pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
-      temp[n, 8:12] <- quantile(perm.pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
+      temp[n, 2]  <- ks.test(pole1, perm.pole1, alternative="less")$p.val       #ks.l.p
+      temp[n, 3]  <- ks.test(pole1, perm.pole1, alternative="greater")$p.val    #ks.g.p
+      temp[n, 4:8] <- quantile(pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
+      temp[n, 9:13] <- quantile(perm.pole1, c(0.1, 0.25, 0.5, 0.75, 0.9))
     }
     rownames(temp) <- cmp
     temp 
   }
-  colnames(results) <- c("wilcox.p", "ks.p", "Q10", "Q25", "Q50", "Q75", "Q90", "P_Q10", "P_Q25", "P_Q50", "P_Q75", "P_Q90")
+  colnames(results) <- ret.value
   results 
 }
                
