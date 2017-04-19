@@ -114,6 +114,7 @@ cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1,
         idx <- rep(TRUE, ncol(data))
         if(quantile(data[i,], 0) == quantile(data[i,], nonexpr.q)) idx <- idx & data[i,] > quantile(data[i,], 0)
         if(quantile(data[j,], 0) == quantile(data[j,], nonexpr.q)) idx <- idx & data[j,] > quantile(data[j,], 0)
+        if( sum(idx) < 10 ) next()
         cycGD.res <- cycG_dect(rbind(data[i,idx], data[j,idx]))
         set.seed(seed)
         perm.cycGD.res <- cycG_dect(rbind(data[i,idx], sample(data[j,idx])))
