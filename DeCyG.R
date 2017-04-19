@@ -139,7 +139,19 @@ cycG_perm <- function(data, nonexpr.filter=F, nonexpr.q=0.1,
   colnames(results) <- ret.value
   results 
 }
-               
+    
+cand_scatter_plot <- function(cycG.result, expr.data, cols=c(2,3), topN=100) { 
+  feat <- apply(log10(cycG.result[, cols, drop=F]), 1, sum) 
+  cycG.result.ordered <- cycG.result[order(feat), ]
+  gene.pairs <- rownames(cycG.result.ordered)[1:topN]
+  g1 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[1])
+  g2 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[3])
+  for(i in 1:topN) {
+    plot(expr.data[g1[i],], expr.data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i])
+  }
+  cycG.result.ordered
+}
+    
 cycG_simu <- function(seed=1000) {
   set.seed(seed)
   G1 <- rnorm(1000)
