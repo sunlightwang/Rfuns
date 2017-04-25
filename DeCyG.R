@@ -154,7 +154,7 @@ cand_scatter_plot <- function(cycG.result, expr.data, cols=c(2,3), topN=100) {
 }
                
 cand_scatter_plot.IQR <- function(cycG.result, expr.data, q.col=c(6,8), perm.q.col=c(12,14), topN=500) { 
-  feat <- apply(cycG.result, 1, function(x) diff(x[q.col]) / diff(x[perm.q.col]) )
+  feat <- apply(cycG.result, 1, function(x) diff(x[q.col]) - diff(x[perm.q.col]) )
   cycG.result.ordered <- cycG.result[order(feat), ]
   gene.pairs <- rownames(cycG.result.ordered)[1:topN]
   g1 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[1])
