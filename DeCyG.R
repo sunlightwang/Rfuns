@@ -153,7 +153,19 @@ cand_scatter_plot <- function(cycG.result, expr.data, cols=c(2,3), topN=100) {
   cycG.result.ordered
 }
                
-cand_scatter_plot.IQR <- function(cycG.result, expr.data, q.col=c(6,8), perm.q.col=c(11,13), topN=500) { 
+cand_scatter_plot.IQR <- function(cycG.result, expr.data, q.col=c(6,8), topN=200) { 
+  feat <- apply(cycG.result, 1, function(x) diff(x[q.col]) )
+  cycG.result.ordered <- cycG.result[order(feat), ]
+  gene.pairs <- rownames(cycG.result.ordered)[1:topN]
+  g1 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[1])
+  g2 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[3])
+  for(i in 1:topN) {
+    plot(expr.data[g1[i],], expr.data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i])
+  }
+  cycG.result.ordered
+}
+               
+cand_scatter_plot.IQR_perm <- function(cycG.result, expr.data, q.col=c(6,8), perm.q.col=c(11,13), topN=200) { 
   feat <- apply(cycG.result, 1, function(x) diff(x[q.col]) / diff(x[perm.q.col]) )
   cycG.result.ordered <- cycG.result[order(feat), ]
   gene.pairs <- rownames(cycG.result.ordered)[1:topN]
