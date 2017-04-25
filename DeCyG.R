@@ -160,7 +160,8 @@ cand_scatter_plot.I80P <- function(cycG.result, expr.data, q.col=c(5,9), topN=20
   g1 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[1])
   g2 <- sapply(gene.pairs, function(x) unlist(strsplit(x, "[.]"))[3])
   for(i in 1:topN) {
-    plot(expr.data[g1[i],], expr.data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i])
+    ce <- cor(expr.data[g1[i],], expr.data[g2[i],])
+    plot(expr.data[g1[i],], expr.data[g2[i],], pch=20, xlab=g1[i], ylab=g2[i], main=paste("r =",signif(ce, 3)))
   }
   cycG.result.ordered
 }
