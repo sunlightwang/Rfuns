@@ -27,7 +27,7 @@ cycG_dect <- function(GP) {
   pca <- prcomp(t(GP.scaled)) 
   # pca$x = t(GP.scaled) %*% pca$rotation
   pca.rotated <- t(GP.scaled) %*% pca$rotation
-  pca.rotated.scaled <- t( t(pca.rotated) / pca$sdev )
+  pca.rotated.scaled <- t(center.scale(t(pca.rotated)))
   #plot(pca.rotated.scaled)
   #abline(v=0,h=0,lty=2,col="grey80")
   GP.pole <- cart2pol(pca.rotated.scaled)
