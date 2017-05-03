@@ -1,6 +1,7 @@
 library(matrixStats)
-#TODO: filter out bimodel genes first
-center.scale <- function(data)  { ###TODO: center scale maybe not good for asymmetric situation; alt. 5-95% interval rescale: check PCA..
+#NOTE: bimodel genes detection 
+#TODO: geneset: with correlation filter out genes
+center.scale <- function(data)  { ###TODO: center scale maybe not good for asymmetric situation; alt. 5-95% interval rescale.
   (data - rowMeans(data)) / sqrt(rowVars(data)) }
 
 cart2pol <- function(data) {
