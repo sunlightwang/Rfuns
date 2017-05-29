@@ -1,8 +1,19 @@
 library(matrixStats)
 #NOTE: bimodel genes detection 
 #TODO: geneset: with correlation filter out genes
-center.scale <- function(data)  { ###TODO: center scale maybe not good for asymmetric situation; alt. 5-95% interval rescale.
-  (data - rowMeans(data)) / sqrt(rowVars(data)) }
+center.scale <- function(data, method=c("quantile","mean"), quantile_low=0.05, quantile_high=0.95)  { 
+  if(method %in% "mean")  (data - rowMeans(data)) / sqrt(rowVars(data)) 
+  if(method %in% "quantile") {
+    d1 <- apply(data, 1, function(x) {
+      lb <- quantile(x, quantile_low)
+      ub <- quantile(x, quantile_high)
+      x[x<lb] <- lb
+      x[x>ub] <- ub
+      (2 * x - lb - ub) / (ub - lb) 
+    })
+    t(d1)
+  }
+}
 
 cart2pol <- function(data) {
   do.call(rbind, sapply(1:nrow(data), function(x) {
