@@ -11,7 +11,7 @@ library(ggthemes)
 library(gridExtra)
 library(scales)
 library(diffusionMap)
-source("theme.R")
+source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 
 geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
   plot( NULL, xlim=xylim, ylim=xylim,
