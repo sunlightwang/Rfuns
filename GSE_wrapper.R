@@ -2,7 +2,7 @@ source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 library(limma)
 library(goseq)
 
-function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
+run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                                test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
                                minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
   DEgenes <- rep(0, length(Allgenelist))
