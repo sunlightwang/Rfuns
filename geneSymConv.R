@@ -1,5 +1,7 @@
 require("biomaRt")
 
+### here only provides human and mouse gene symbol converstion functions 
+
 MouseGeneToHuman <- function(genelist){
   human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
