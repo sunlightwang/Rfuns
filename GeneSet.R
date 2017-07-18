@@ -47,7 +47,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   n <- totalN - SelM # total black balls 
   q <- nm[,2] # selected white balls
   k <- nm[,1] # total selected bass
-  pval <- phyper(q, m, n, k, lower.tail=FALSE)
+  pval <- phyper(q, m, n, k, lower.tail=FALSE) + dhyper(q, m, n, k)
   padj <- p.adjust(pval, method="fdr")
   result <- data.frame(nm, pval=pval,padj=padj)
   result <- result[order(padj),]
