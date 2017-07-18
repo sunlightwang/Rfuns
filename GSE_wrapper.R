@@ -8,7 +8,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
   DEgenes <- rep(0, length(Allgenelist))
   names(DEgenes) <- Allgenelist
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
-  pwf <- nullp(DEgenes, genome, geneID)
+  pwf <- nullp(DEgenes, genome, geneID, plot.fit=F)
   if(geneLengthCorrect) {
     pvals <- goseq(pwf, genome, geneID, test.cats=test.cats, method="Wallenius", use_genes_without_cat=T)
   } else { 
