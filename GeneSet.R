@@ -28,7 +28,8 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
 GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10) { 
   uniqGeneID <- unique(annots$Gene)
   if(is.null(bgGeneList)) {bgGeneList <- uniqGeneID}
-  totalN <- length(intersect(bgGeneList, uniqGeneID))
+  #totalN <- length(intersect(bgGeneList, uniqGeneID))
+  totalN <- length(bgGeneList)
   SelM <- length(intersect(GeneList, uniqGeneID))
   nm <- do.call(rbind, 
                 tapply(1:nrow(annots), as.factor(annots$GeneSet), 
