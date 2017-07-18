@@ -8,9 +8,9 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
   pwf <- nullp(DEgenes, genome, geneID)
   if(geneLengthCorrect) {
-    pvals <- goseq(pwf, genome, geneID, test.cats=test.cats, method="Wallenius")
+    pvals <- goseq(pwf, genome, geneID, test.cats=test.cats, method="Wallenius", use_genes_without_cat=T)
   } else { 
-    pvals <- goseq(pwf, genome, geneID,  test.cats=test.cats, method="Hypergeometric")
+    pvals <- goseq(pwf, genome, geneID,  test.cats=test.cats, method="Hypergeometric", use_genes_without_cat=T)
   }
 }
 
