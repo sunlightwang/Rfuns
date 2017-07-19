@@ -2,6 +2,7 @@ source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 library(limma)
 library(goseq)
 
+# GOSeq
 run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                                test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
                                minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
@@ -37,3 +38,11 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
 
 # pvals.1 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", TRUE)
 # pvals.2 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", FALSE)
+
+### CAMERA
+run_camera <- function(expr_log2, design, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
+                       test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, 
+                       minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
+  
+  camera(expr_log2, list(set1=index1,set2=index2), design, inter.gene.cor=NA)
+}
