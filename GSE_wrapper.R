@@ -19,7 +19,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
   if(gs_enrich_plot) {
     valid <- pvals$numInCat >= minSize & pvals$numInCat <= maxSize
     pvals <- pvals[valid, ]
-    if(match(test.cats, "KEGG")) {
+    if(test.cats == "KEGG") {
       library(KEGG.db)
       xx <- as.list(KEGGPATHID2NAME)
       df <- data.frame(term=unlist(xx[pvals$category]), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
