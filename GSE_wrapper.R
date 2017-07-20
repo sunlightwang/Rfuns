@@ -42,7 +42,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
 ### CAMERA
 run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                        test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, 
-                       minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
+                       minSize=10, maxSize=3000, gs_enrich_plot=T, topN=10) {
   
   design <- cbind(Intercept=1,Group=as.numeric(as.factor(sample.cat))-1) 
   require(goseq)
@@ -73,7 +73,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     require(reshape2)
     df <- melt(sample.mean_expr)
     colnames(df) <- c("ID","type","expr")
-    p <- ggplot(df, aes(x=type, y=expr)) +  geom_boxplot(aes(fill=type)) + geom_point() + facet_grid(. ~ ID) + theme_Publication() 
+    p <- ggplot(df, aes(x=type, y=expr)) +  geom_boxplot(aes(fill=type)) + geom_point() + facet_grid(ID ~ .) + theme_Publication() 
     return(p)
     ## genes       
     #s1.idx <- design[,2] == unique(design[,2])[1]
