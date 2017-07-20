@@ -62,7 +62,18 @@ run_camera <- function(expr_log2, no.samples=c(2,2), genome=c("hg19", "mm10"), g
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
   camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor)
-  camera.rst.topN <- camera.rst[1:topN, ]
-  camera.rst.topN.GS <- rownames(camera.rst.topN)
-  cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
+  
+  if(gs_enrich_plot) {
+    camera.rst.topN <- camera.rst[1:topN, ]
+    camera.rst.topN.GS <- rownames(camera.rst.topN)
+    cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]\
+    ## sample 
+    lapply(cat2genes.idx.topN, function(x) colMeans(expr_log2[x,]))
+    ## genes       
+    s1.idx <- design[,2] == unique(design[,2])[1]
+    s2.idx <- design[,2] == unique(design[,2])[2]
+    lapply(cat2genes.idx.topN, function(x) cbind(rowMeans(expr_log2[x,s1.idx]),rowMeans(expr_log2[x,s2.idx])))
+  } else { 
+    return(camera.rst)
+  }
 }
