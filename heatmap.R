@@ -22,7 +22,7 @@ heatmap_cluster <- function(data, design.2, n.row.class=4, min.var=1) {
   ### require(RColorBrewer)
   require(RColorBrewer)
   cr <- brewer.pal(n.row.class, "Set1")
-  heatmap.2(data[idx,], distfun=dist2, hclustfun=hclust2, col=bluered(64), sepwidth=c(0,0),
+  heatmap.2(as.matrix(data[idx,]), distfun=dist2, hclustfun=hclust2, col=bluered(64), sepwidth=c(0,0),
             reorderfun=function(d, w) reorder(d, w, agglo.FUN = mean),
             scale="row", ColSideColors=cc, RowSideColors=cr[gr.row], key=TRUE, symkey=FALSE, labRow=FALSE,
             rowsep=0, density.info="none", cexRow=1, cexCol=1, margins=c(6,11),  trace="none", srtCol=45)
