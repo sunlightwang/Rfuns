@@ -40,11 +40,11 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
 # pvals.2 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", FALSE)
 
 ### CAMERA
-run_camera <- function(expr_log2, no.samples=c(2,2), genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
+run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                        test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, 
                        minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
   
-  design <- cbind(Intercept=1,Group=c(rep(0,no.samples[1]), rep(1,no.samples[2])))
+  design <- cbind(Intercept=1,Group=as.numeric(as.factor(sample.cat))-1) 
   require(goseq)
   reversemapping <- function(map) {
     tmp=unlist(map,use.names=FALSE)
@@ -66,13 +66,19 @@ run_camera <- function(expr_log2, no.samples=c(2,2), genome=c("hg19", "mm10"), g
   if(gs_enrich_plot) {
     camera.rst.topN <- camera.rst[1:topN, ]
     camera.rst.topN.GS <- rownames(camera.rst.topN)
-    cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]\
+    cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
     ## sample 
-    lapply(cat2genes.idx.topN, function(x) colMeans(expr_log2[x,]))
+    sample.mean_expr <- do.call(rbind, lapply(cat2genes.idx.topN, function(x) colMeans(expr_log2[x,])))
+    colnames(sample.mean_expr) <- sample.cat
+    require(reshape2)
+    df <- melt(sample.mean_expr)
+    colnames(df) <- c("ID","type","expr")
+    p <- ggplot(df, aes(x=type, y=expr)) +  geom_boxplot(aes(fill=type)) + facet_grid(. ~ ID) + theme_Publication() 
+    return(p)
     ## genes       
-    s1.idx <- design[,2] == unique(design[,2])[1]
-    s2.idx <- design[,2] == unique(design[,2])[2]
-    lapply(cat2genes.idx.topN, function(x) cbind(rowMeans(expr_log2[x,s1.idx]),rowMeans(expr_log2[x,s2.idx])))
+    #s1.idx <- design[,2] == unique(design[,2])[1]
+    #s2.idx <- design[,2] == unique(design[,2])[2]
+    #lapply(cat2genes.idx.topN, function(x) cbind(rowMeans(expr_log2[x,s1.idx]),rowMeans(expr_log2[x,s2.idx])))
   } else { 
     return(camera.rst)
   }
