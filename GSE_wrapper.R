@@ -58,6 +58,8 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   cat2genes.idx0 <- ids2indices(cat2gene, rownames(expr_log2), remove.empty=TRUE)
   geneset.size <- lapply(cat2genes.idx0, length)
   cat2genes.idx <- cat2genes.idx0[geneset.size >= minSize & geneset.size <= maxSize]
+  require(KEGG.db)
+  xx <- as.list(KEGGPATHID2NAME)
   names(cat2genes.idx) <- unlist(xx[names(cat2genes.idx)])
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
