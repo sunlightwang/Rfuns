@@ -78,7 +78,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
                                                
     p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=1) + geom_point() + 
                  facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol, labeller=label_wrap_gen(width=15)) + 
-                 theme_Publication(strip.text = element_text(size=12)) 
+                 theme_Publication() 
     return(p)
     ## genes       
     #s1.idx <- design[,2] == unique(design[,2])[1]
