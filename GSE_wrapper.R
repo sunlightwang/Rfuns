@@ -41,7 +41,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
 
 ### CAMERA
 run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
-                       test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, 
+                       test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, FDR=0.1, 
                        minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20, plot.nrow=4, plot.ncol=5) {
   
   design <- cbind(Intercept=1,Group=as.numeric(as.factor(sample.cat))-1) 
@@ -64,10 +64,11 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
   camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor)
-  write.table(camera.rst, sep="\t", quote=F)
+  N <- sum(camera.rst$FDR < FDR)
+  camera.rst.topN <- camera.rst[1:min(N,topN), ]
+  write.table(camera.rst.topN, sep="\t", quote=F)
   
   if(gs_enrich_plot) {
-    camera.rst.topN <- camera.rst[1:topN, ]
     camera.rst.topN.GS <- rownames(camera.rst.topN)
     cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
     ## sample 
@@ -86,6 +87,6 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     #s2.idx <- design[,2] == unique(design[,2])[2]
     #lapply(cat2genes.idx.topN, function(x) cbind(rowMeans(expr_log2[x,s1.idx]),rowMeans(expr_log2[x,s2.idx])))
   } else { 
-    return(camera.rst)
+    return(camera.rst.topN)
   }
 }
