@@ -73,7 +73,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     require(reshape2)
     df <- melt(sample.mean_expr)
     colnames(df) <- c("ID","type","expr")
-    p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type)) + geom_point() + 
+    p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=1) + geom_point() + 
                  facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol) + 
                  theme_Publication() 
     return(p)
