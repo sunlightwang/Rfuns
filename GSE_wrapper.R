@@ -65,6 +65,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   } else { 
     require(GO.db)
     names(cat2genes.idx) <- select(GO.db, keys = names(cat2genes.idx), columns = c("TERM"))[,2]
+    cat2genes.idx <- cat2genes.idx[! is.na(names(cat2genes.idx))]
   }
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
