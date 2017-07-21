@@ -64,6 +64,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
   camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor)
+  write.table(camera.rst, sep="\t", quote=F)
   
   if(gs_enrich_plot) {
     camera.rst.topN <- camera.rst[1:topN, ]
