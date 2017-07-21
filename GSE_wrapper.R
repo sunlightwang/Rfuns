@@ -58,7 +58,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   cat2genes.idx0 <- ids2indices(cat2gene, rownames(expr_log2), remove.empty=TRUE)
   geneset.size <- lapply(cat2genes.idx0, length)
   cat2genes.idx <- cat2genes.idx0[geneset.size >= minSize & geneset.size <= maxSize]
-
+  names(cat2genes.idx) <- unlist(xx[names(cat2genes.idx)])
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
   camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor)
@@ -73,13 +73,9 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     require(reshape2)
     df <- melt(sample.mean_expr)
     colnames(df) <- c("ID","type","expr")
-                                              
-    require(KEGG.db)
-    xx <- as.list(KEGGPATHID2NAME)
-    df <- data.frame(df, term=unlist(xx[df$ID]))
-                                              
+                                               
     p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=1) + geom_point() + 
-                 facet_wrap(~ term, scales="free",nrow=plot.nrow,ncol=plot.ncol) + 
+                 facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol) + 
                  theme_Publication() 
     return(p)
     ## genes       
