@@ -52,6 +52,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     return(split(names(tmp),as.vector(tmp)))
   }
   gene2cat <- getgo(rownames(expr_log2), genome, geneID, fetch.cats=test.cats)
+  names(gene2cat)=rownames(expr_log2)
   cat2gene=reversemapping(gene2cat)
   gene2cat=reversemapping(cat2gene)
   
