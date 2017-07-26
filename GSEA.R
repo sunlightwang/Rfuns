@@ -1,12 +1,13 @@
-### GSEA originated by Broad
+### GSEA originated by Broad Institute
 
 GSEA.ES <- function(gene.score, gene.set, weighted.score.type = 1) {  
   ngene <- length(gene.score)
   nset <- length(gene.set)
-  gene.set.size <- do.call(c, lapply(gene.set, length))
   sort.idx <- order(gene.score, decreasing=TRUE)
   gene.score.sorted <- gene.score[sort.idx]
   
+  running.score <- do.call(c, lapply(gene.set, length))
+
   ## TODO
   tag.indicator <- sign(match(gene.list, gene.set, nomatch=0))    # notice that the sign is 0 (no tag) or 1 (tag) 
   no.tag.indicator <- 1 - tag.indicator 
