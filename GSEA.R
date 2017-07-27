@@ -6,7 +6,10 @@ GSEA.ES <- function(gene.score, gene.set, weighted.score.type = 1) {
   sort.idx <- order(gene.score, decreasing=TRUE)
   gene.score.sorted <- gene.score[sort.idx]
   
-  running.score <- do.call(c, lapply(gene.set, length))
+  running.score <- do.call(rbind, lapply(gene.set, function(x) {
+    correl.vector <- rep(1, length(gene.score.sorted))
+    
+  })
 
   ## TODO
   tag.indicator <- sign(match(gene.list, gene.set, nomatch=0))    # notice that the sign is 0 (no tag) or 1 (tag) 
