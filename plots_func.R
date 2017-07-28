@@ -21,7 +21,7 @@ panel.sqrt_jsd <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
   txt <- format(c(r, 0.123456789), digits = digits)[1]
   txt <- paste0(prefix, txt)
   if(missing(cex.cor)) cex.cor <- 0.68/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * (abs(r)+1)/2 )
+  text(0.5, 0.5, txt, cex = cex.cor * (abs(1-r)+1)/2 )
 }
 
 panel.cor <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
