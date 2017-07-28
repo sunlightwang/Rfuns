@@ -8,6 +8,19 @@ panel.hist <- function(x, breaks=20, ...)
   rect(breaks[-nB], 0, breaks[-1], y, col = "cyan")
 }
 
+panel.sqrt_jsd <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
+  require(philentropy)
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  x <- x / sum(x)
+  y <- y / sum(y)
+  r <- sqrt(JSD(rbind(x,y), test.na=FALSE))
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste0(prefix, txt)
+  if(missing(cex.cor)) cex.cor <- 0.68/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * (abs(r)+1)/2 )
+}
+
 panel.cor <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
 {
   usr <- par("usr"); on.exit(par(usr))
