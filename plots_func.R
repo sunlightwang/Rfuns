@@ -9,6 +9,7 @@ panel.hist <- function(x, breaks=20, ...)
 }
 
 panel.sqrt_jsd <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
+{
   require(philentropy)
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
