@@ -13,6 +13,8 @@ panel.sqrt_jsd <- function(x, y, digits = 3, prefix = "", cex.cor, ...)
   require(philentropy)
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
+  x[x==0] <- 0.00001
+  y[y==0] <- 0.00001
   x <- x / sum(x)
   y <- y / sum(y)
   r <- sqrt(JSD(rbind(x,y), test.na=FALSE))
