@@ -11,6 +11,7 @@ library(ggthemes)
 library(gridExtra)
 library(scales)
 library(destiny)
+library(plotly)
 source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 
 geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
