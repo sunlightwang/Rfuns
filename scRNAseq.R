@@ -386,7 +386,7 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
     nrowplot <- plot_nrow
     ngene <- length(display)
     pl <- lapply(1:ngene, function(x) {
-      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color= gene_expr[display[x],], colors = colors = rev(rainbow(3))) %>%
+      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color= gene_expr[display[x],], colors = rev(rainbow(3))) %>%
         add_markers() %>%
         layout(scene = list(xaxis = list(title = 'DC1'),
                             yaxis = list(title = 'DC2'),
