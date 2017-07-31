@@ -367,7 +367,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
 }
 
 diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("euclidean", "cosine", "rankcor"), 
-                                  sigma = "local", n_local = 5:7, density_norm = TRUE, plot=T, 
+                                  sigma = "local", n_local = 5:7, density_norm = TRUE, plot=T, html.keyword="", 
                                   gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
   dfmap <- DiffusionMap(t(Gene.cnt.scaled), sigma=sigma, density_norm=density_norm, distance=dist.method, n_local=n_local, ...)
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
@@ -378,7 +378,8 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
       layout(scene = list(xaxis = list(title = 'DC1'),
                           yaxis = list(title = 'DC2'),
                           zaxis = list(title = 'DC3')))
-    htmlwidgets::saveWidget(as_widget(p), "diffusionmap.html")
+    html.name <- ifelse(html.keyword=="", "diffusionmap.html", paste0("diffusionmap.", html.keyword, ".html"))
+    htmlwidgets::saveWidget(as_widget(p), html.name)
     plot(dfmap, col=type, pch=20)
   }
   display <- intersect(display, rownames(gene_expr))
@@ -392,7 +393,9 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
         layout(scene = list(xaxis = list(title = 'DC1'),
                             yaxis = list(title = 'DC2'),
                             zaxis = list(title = 'DC3')))
-      htmlwidgets::saveWidget(as_widget(p), paste0("diffusionmap_", display[x],".html"))
+      html.name <- ifelse(html.keyword=="", paste0("diffusionmap_", display[x],".html"), 
+                          paste0("diffusionmap_", html.keyword, "_", display[x], ".html"))
+      htmlwidgets::saveWidget(as_widget(p), html.name)
       ### 
       ggplot(dfmap.rst, aes(DC1, DC2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
         scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x])
