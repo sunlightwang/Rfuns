@@ -10,7 +10,7 @@ library(grid)
 library(ggthemes)
 library(gridExtra)
 library(scales)
-library(diffusionMap)
+library(destiny)
 source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 
 geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
@@ -365,27 +365,39 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
   return(tsne.rst)
 }
 
-diffusionmap.analysis <- function(Gene.cnt.scaled, dist.method="euclidean", neigen=10, plot=T, gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
-  D <- dist(t(Gene.cnt.scaled), method=dist.method)
-  dmap = diffuse(D, neigen=neigen, ...) 
+diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("euclidean", "cosine", "rankcor"), 
+                                  sigma = "local", n_local = 5:7, density_norm = TRUE, n_eigs=20, plot=T, 
+                                  gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
+  dfmap <- DiffusionMap(t(Gene.cnt.scaled), sigma=sigma, n_eigs=n_eigs, density_norm=density_norm, distance=distance, n_local=n_local, ...)
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
-  dmap.rst <- data.frame(dmap.1=dmap$X[,1], dmap.2=dmap$X[,2], type=type, names=colnames(Gene.cnt.scaled))
+  dfmap.rst <- data.frame(DC1=dfmap$DC1, DC2=dfmap$DC2, DC3=dfmap$DC3, type=type, names=colnames(Gene.cnt.scaled))
   if(plot) { 
-    p <- ggplot(dmap.rst, aes(dmap.1, dmap.2, color = type)) + geom_point() + scale_colour_Rainbow() + theme_Publication()
-    print(p)
-    p <- ggplot(dmap.rst, aes(dmap.1, dmap.2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication()
-    print(p)
+    p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color=~type, colors = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#a0a013","#dd4444")) %>%
+      add_markers() %>%
+      layout(scene = list(xaxis = list(title = 'DC1'),
+                          yaxis = list(title = 'DC2'),
+                          zaxis = list(title = 'DC3')))
+    htmlwidgets::saveWidget(as_widget(p), "diffusionmap.html")
+    plot(dfmap, col=type, pch=20)
   }
   display <- intersect(display, rownames(gene_expr))
   if(plot & !is.null(display) & length(display) > 0) {
     ### for individual genes
     nrowplot <- plot_nrow
     ngene <- length(display)
-    pl <- lapply(1:ngene, function(x) 
-      ggplot(dmap.rst, aes(dmap.1, dmap.2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
+    pl <- lapply(1:ngene, function(x) {
+      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color= gene_expr[display[x],], colors = colors = rev(rainbow(3))) %>%
+        add_markers() %>%
+        layout(scene = list(xaxis = list(title = 'DC1'),
+                            yaxis = list(title = 'DC2'),
+                            zaxis = list(title = 'DC3')))
+      htmlwidgets::saveWidget(as_widget(p), paste0("diffusionmap_", display[x],".html"))
+      ### 
+      ggplot(dfmap.rst, aes(DC1, DC2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
         scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x]))
+    }
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
-  return(dmap.rst)
+  return(dfmap)
 }
