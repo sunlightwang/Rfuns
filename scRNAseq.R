@@ -394,8 +394,8 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
       htmlwidgets::saveWidget(as_widget(p), paste0("diffusionmap_", display[x],".html"))
       ### 
       ggplot(dfmap.rst, aes(DC1, DC2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
-        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x]))
-    }
+        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x])
+    }) 
     p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
