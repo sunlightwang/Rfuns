@@ -279,7 +279,7 @@ PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutof
   pca.explained <- pca.real$sdev^2 / sum(pca.real$sdev^2) * 100
   if(plot) {
     # plot
-    type <- factor(celltypes(colnames(Gene.cnt.scaled)))
+    type <- celltypes(colnames(Gene.cnt.scaled))
     #pca.rst <- data.frame(PC1 = t(t(pca.real$rotation[, 1]) %*% Gene.cnt.scaled), PC2 = t(t(pca.real$rotation[, 2]) %*% Gene.cnt.scaled), type=type)
     pca.dist <- apply(as.matrix(dist(pca.real$x[,1:2], diag = T, upper = T)),1,function(x) min(x[x!=0]))
     pca.text <- pca.dist > quantile(pca.dist,0.95)
