@@ -274,12 +274,12 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
   return(HVG)
 } 
 
-PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_ngene=0, plot_nrow=3, permute=TRUE) {
+PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutoff=0.01, plot_value=Gene.cnt.scaled, display=c(), plot_ngene=0, plot_nrow=3, permute=TRUE) {
   pca.real <- prcomp(t(Gene.cnt.scaled))
   pca.explained <- pca.real$sdev^2 / sum(pca.real$sdev^2) * 100
   if(plot) {
     # plot
-    type <- celltypes(colnames(Gene.cnt.scaled))
+    type <- factor(celltypes(colnames(Gene.cnt.scaled)))
     #pca.rst <- data.frame(PC1 = t(t(pca.real$rotation[, 1]) %*% Gene.cnt.scaled), PC2 = t(t(pca.real$rotation[, 2]) %*% Gene.cnt.scaled), type=type)
     pca.dist <- apply(as.matrix(dist(pca.real$x[,1:2], diag = T, upper = T)),1,function(x) min(x[x!=0]))
     pca.text <- pca.dist > quantile(pca.dist,0.95)
@@ -289,6 +289,16 @@ PCA.analysis <- function(Gene.cnt.scaled, plot=T, pca.perm.n=100, pca.padj.cutof
       xlab(paste0("PC1 (", signif(pca.explained[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pca.explained[2], 3), "%)"))
     print(p)
     p <- ggplot(pca.rst, aes(PC1, PC2, color = type)) + geom_text(aes(label=names), size=2) + scale_colour_Rainbow() + theme_Publication() 
+    print(p)
+  }
+  if(plot & !is.null(display) & length(display) > 0) {
+    ### for individual genes
+    nrowplot <- plot_nrow
+    ngene <- length(display)
+    pl <- lapply(1:ngene, function(x) 
+      ggplot(pca.rst, aes(PC1, PC2, color = plot_value[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
+        scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x]))
+    p <- marrangeGrob(pl, nrow=nrowplot, ncol=nrowplot, top="")
     print(p)
   }
   if(plot & plot_ngene > 0) {
