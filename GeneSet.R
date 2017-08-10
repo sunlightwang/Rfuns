@@ -1,7 +1,5 @@
 library(GO.db)
 library(AnnotationDbi)
-library(org.Hs.eg.db)
-library(org.Mm.eg.db)
 
 loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
                    type=c("BP", "MF", "CC")) {
@@ -11,9 +9,11 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
   GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
   if(org == "mouse") {
+    require(org.Mm.eg.db)
     annots <- select(org.Mm.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GOALL") # GOALL includes GO child notes
   } else {
+    require(org.Hs.eg.db)
     annots <- select(org.Hs.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GOALL") # GOALL includes GO child notes
   }
