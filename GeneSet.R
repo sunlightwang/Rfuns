@@ -24,6 +24,30 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   }
   data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
+                          
+GO.list <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
+                   type=c("BP", "MF", "CC")) {
+  org <- match.arg(organism, c("mouse", "human"))
+  type <- match.arg(type, c("BP", "MF", "CC"))
+  GoTerms <- as.list(GOTERM)
+  GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
+  GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
+  if(org == "mouse") {
+    require(org.Mm.eg.db)
+    annots <- select(org.Mm.eg.db, keys=GoVect,
+                     columns=geneIDtype, keytype="GO")
+  } else {
+    require(org.Hs.eg.db)
+    annots <- select(org.Hs.eg.db, keys=GoVect,
+                     columns=geneIDtype, keytype="GO") 
+  }
+  # rm NAs
+  annots <- annots[!is.na(annots[,4]),]
+  if(length(type) == 1) {
+    annots <- annots[ annots$ONTOLOGY == type,]
+  }
+  data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
+}
 
 GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10) { 
   uniqGeneID <- unique(annots$Gene)
