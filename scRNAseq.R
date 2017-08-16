@@ -244,7 +244,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
   }
   if(plot) {
     plot( NULL, xaxt="n", yaxt="n",
-          log="xy", xlim = c( 1e-2, 1e5 ), ylim = c( 0.01, 100 ),
+          log="xy", xlim = c( 1e-2, 1e5 ), ylim = c( 0.001, 100 ),
           xlab = "average normalized read count", ylab = "squared coefficient of variation (CV^2)" )
     axis( 1, 10^(-2:5), c( "0.01", "0.1", "1", "10", "100", "1000",
                            expression(10^4), expression(10^5) ) )
