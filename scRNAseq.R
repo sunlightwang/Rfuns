@@ -248,7 +248,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
           xlab = "average normalized read count", ylab = "squared coefficient of variation (CV^2)" )
     axis( 1, 10^(-2:5), c( "0.01", "0.1", "1", "10", "100", "1000",
                            expression(10^4), expression(10^5) ) )
-    axis( 2, 10^(-2:2), c( "0.01", "0.1", "1", "10" ,"100"), las=2 )
+    axis( 2, 10^(-3:2), c( "0.001", "0.01", "0.1", "1", "10" ,"100"), las=2 )
     abline( h=10^(-2:1), v=10^(-2:5), col="#D0D0D0", lwd=2 )
     # Plot the plant genes, use a different color if they are highly variable
     if(is.null(topN)) {
