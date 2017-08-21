@@ -19,7 +19,7 @@ loadGO <- function(geneIDtype=c("FLYBASE", "SYMBOL","ENSEMBL"),
   data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
 
-GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10) { 
+GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10, plot=T) { 
   uniqGeneID <- unique(annots$Gene)
   if(is.null(bgGeneList)) {bgGeneList <- uniqGeneID}
   #totalN <- length(intersect(bgGeneList, uniqGeneID))
@@ -49,5 +49,11 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   desc <- unique(data.frame(annots$GeneSet, annots$Desc))
   rownames(desc) <- desc$annots.GeneSet
   result <- data.frame(result, desc=as.character(noquote(desc[rownames(result),2])))
-  result[result$padj < padj_cutoff, ]
+  if(plot) { 
+    p <- ggplot(result, aes(x=reorder(term, padj), y=padj)) + geom_bar(aes(fill=EnrichFold), stat="identity") +
+    coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red")
+    return(p)
+  else { 
+    return(result[result$padj < padj_cutoff, ])
+  }
 }               
