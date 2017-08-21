@@ -53,7 +53,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   result.sig <- result[result$padj < padj_cutoff, ]
   if(plot) { 
     if( nrow(result.sig) > maxPlotTerm) { result.sig <- result.sig[1:maxPlotTerm,] }
-    p <- ggplot(result.sig, aes(x=reorder(desc, padj), y=padj)) + geom_bar(aes(fill=EnrichFold), stat="identity") +
+    p <- ggplot(result.sig, aes(x=reorder(desc, padj), y=-log10(padj))) + geom_bar(aes(fill=EnrichFold), stat="identity") +
           coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red")
     return(p)
   } else { 
