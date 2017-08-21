@@ -49,12 +49,12 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   result <- result[order(padj),]
   desc <- unique(data.frame(annots$GeneSet, annots$Desc))
   rownames(desc) <- desc$annots.GeneSet
-  result <- data.frame(result, desc=substr(as.character(noquote(desc[rownames(result),2])), 1, 40))
+  result <- data.frame(result, desc=substr(as.character(noquote(desc[rownames(result),2])), 1, 46))
   result.sig <- result[result$padj < padj_cutoff, ]
   if(plot) { 
     if( nrow(result.sig) > maxPlotTerm ) { result.sig <- result.sig[1:maxPlotTerm,] }
     margin_add <- 0
-    if( nrow(result.sig) < maxPlotTerm ) { margin_add <- (maxPlotTerm - nrow(result.sig)) * 25 / 2 }
+    if( nrow(result.sig) < maxPlotTerm ) { margin_add <- (maxPlotTerm - nrow(result.sig)) * 5 / 2 }
     p <- ggplot(result.sig, aes(x=reorder(desc, -padj), y=-log10(padj))) + geom_bar(aes(fill=EnrichFold), stat="identity") +
           coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red") + 
           geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") + 
