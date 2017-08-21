@@ -20,7 +20,7 @@ loadGO <- function(geneIDtype=c("FLYBASE", "SYMBOL","ENSEMBL"),
   data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
 
-GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10, plot=T) { 
+GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10, maxBgHit=3000, plot=T, maxPlotTerm=20) { 
   uniqGeneID <- unique(annots$Gene)
   if(is.null(bgGeneList)) {bgGeneList <- uniqGeneID}
   #totalN <- length(intersect(bgGeneList, uniqGeneID))
@@ -34,7 +34,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
                          enrich_fold <- sel_m / list_n / (SelM / totalN)
                          return(c(list_n, sel_m, enrich_fold))
                        }) )
-  nm <- nm[ nm[,1] >= minBgHit & nm[,2] >= minHit, , drop=F]
+  nm <- nm[ nm[,1] >= minBgHit & nm[,1] <= maxBgHit & nm[,2] >= minHit, , drop=F]
   if(nrow(nm) < 1) {return(NULL)}
   colnames(nm) <- c("bgHit", "Hit", "EnrichFold")
   ## white ball: in list
@@ -52,6 +52,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   result <- data.frame(result, desc=as.character(noquote(desc[rownames(result),2])))
   result.sig <- result[result$padj < padj_cutoff, ]
   if(plot) { 
+    if( nrow(result.sig) > maxPlotTerm) { result.sig <- result.sig[1:maxPlotTerm,] }
     p <- ggplot(result.sig, aes(x=reorder(desc, padj), y=padj)) + geom_bar(aes(fill=EnrichFold), stat="identity") +
           coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red")
     return(p)
