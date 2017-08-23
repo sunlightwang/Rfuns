@@ -5,7 +5,7 @@ library(goseq)
 # GOSeq
 run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                                test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
-                               minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20) {
+                               minSize=10, maxSize=3000, gs_enrich_plot=T, padj_cutoff=0.05, topN=20) {
   DEgenes <- rep(0, length(Allgenelist))
   names(DEgenes) <- Allgenelist
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
