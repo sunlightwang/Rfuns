@@ -252,10 +252,10 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     abline( h=10^(-2:1), v=10^(-2:5), col="#D0D0D0", lwd=2 )
     # Plot the plant genes, use a different color if they are highly variable
     if(is.null(topN)) {
-      points( means.Gene, cv2.Gene, pch=20, cex=.2,
+      points( means.Gene, cv2.Gene, pch=20, cex=1,
             col = ifelse( padj < padjcutoff, "#C0007090", "#70500040" ) )
     } else {
-      points( means.Gene, cv2.Gene, pch=20, cex=.2,
+      points( means.Gene, cv2.Gene, pch=20, cex=1,
             col = ifelse( names(means.Gene) %in% HVG, "#C0007090", "#70500040" ) )
     }
     if(HVGnames) { 
@@ -268,7 +268,7 @@ HVG.identifier <- function(ERCC.cnt, Gene.cnt, plot=T, normalization=c("sizefact
     lines( xg, psia1theta/xg + coefficients(fit)["a0"] + minBiolDisp,
            lty="dashed", col="#C0007090", lwd=3 )
     # Add the normalised ERCC points
-    points( means.ERCC, cv2.ERCC, pch=20, cex=1, col="#0060B8A0" )
+    points( means.ERCC, cv2.ERCC, pch=20, cex=0.5, col="#0060B8A0" )
     legend("bottomleft", legend=paste0("HVG: ", HVG.stat[2]," out of ", sum(HVG.stat)), bty="n")
   }
   return(HVG)
