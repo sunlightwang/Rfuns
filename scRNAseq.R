@@ -28,8 +28,8 @@ geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0), highlight=N
     pch=19, cex=.5, col = col )
   if(length(highlight) > 0) {
     points(
-    ifelse( x > 0, log10(x), -.7 ),
-    ifelse( y > 0, log10(y), -.7 ),
+    ifelse( x[highlight] > 0, log10(x[highlight]), -.7 ),
+    ifelse( y[highlight] > 0, log10(y[highlight]), -.7 ),
     pch=20, cex=.5, col = "cyan" )
   }
   axis( 1, c( -.7, 0:6 ),
