@@ -395,7 +395,7 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
         layout(scene = list(xaxis = list(title = 'DC1'),
                           yaxis = list(title = 'DC2'),
                           zaxis = list(title = 'DC3')))
-      html.name <- ifelse(html.keyword=="", "diffusionmap.html", paste0("diffusionmap.", html.keyword, ".html"))
+      html.name <- ifelse(html.keyword=="", "diffusionmap.html", paste0(html.keyword, ".diffusionmap.html"))
       htmlwidgets::saveWidget(as_widget(p), html.name)
     }
     plot(dfmap, col=type, pch=20)
@@ -413,7 +413,7 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
                               yaxis = list(title = 'DC2'),
                               zaxis = list(title = 'DC3')))
         html.name <- ifelse(html.keyword=="", paste0("diffusionmap_", display[x],".html"), 
-                            paste0("diffusionmap_", html.keyword, "_", display[x], ".html"))
+                            paste0(html.keyword, "_", "diffusionmap_", display[x], ".html"))
         htmlwidgets::saveWidget(as_widget(p), html.name)
       }
       ### 
