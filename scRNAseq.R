@@ -14,7 +14,7 @@ library(destiny)
 library(plotly)
 source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 
-geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
+geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0), highlight=NULL) {
   plot( NULL, xlim=xylim, ylim=xylim,
         xaxt="n", yaxt="n", xaxs="i", yaxs="i", asp=1,
         xlab=xlab, ylab=ylab )
@@ -26,6 +26,12 @@ geneScatterplot <- function( x, y, xlab, ylab, col, xylim=c(-1,4.0)) {
     ifelse( x > 0, log10(x), -.7 ),
     ifelse( y > 0, log10(y), -.7 ),
     pch=19, cex=.5, col = col )
+  if(length(highlight) > 0) {
+    points(
+    ifelse( x > 0, log10(x), -.7 ),
+    ifelse( y > 0, log10(y), -.7 ),
+    pch=20, cex=.5, col = "cyan" )
+  }
   axis( 1, c( -.7, 0:6 ),
         c( "0", "1", "10", "100", expression(10^3), expression(10^4),
            expression(10^5), expression(10^6) ) )
