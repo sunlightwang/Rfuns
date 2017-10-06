@@ -385,7 +385,7 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
 diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("euclidean", "cosine", "rankcor"), 
                                   sigma = "local", density_norm = TRUE, plot=TRUE, html.keyword="", 
                                   gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, html=FALSE, ...) { 
-  dfmap <- DiffusionMap(t(Gene.cnt.scaled), sigma=sigma, density_norm=density_norm, distance=dist.method, n_local=n_local, ...)
+  dfmap <- DiffusionMap(t(Gene.cnt.scaled), sigma=sigma, density_norm=density_norm, distance=dist.method, ...)
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
   dfmap.rst <- data.frame(DC1=dfmap$DC1, DC2=dfmap$DC2, DC3=dfmap$DC3, type=type, names=colnames(Gene.cnt.scaled))
   if(plot) { 
