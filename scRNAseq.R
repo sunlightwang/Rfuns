@@ -377,19 +377,21 @@ tSNE.analysis <- function(Gene.cnt.scaled, perplexity=30, max_iter=2000, try_tim
 }
 
 diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("euclidean", "cosine", "rankcor"), 
-                                  sigma = "local", n_local = 5:7, density_norm = TRUE, plot=T, html.keyword="", 
-                                  gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, ...) { 
+                                  sigma = "local", n_local = 5:7, density_norm = TRUE, plot=True, html.keyword="", 
+                                  gene_expr=Gene.cnt.scaled, display=c(), plot_nrow=3, html=False, ...) { 
   dfmap <- DiffusionMap(t(Gene.cnt.scaled), sigma=sigma, density_norm=density_norm, distance=dist.method, n_local=n_local, ...)
   type <- factor(celltypes(colnames(Gene.cnt.scaled)))
   dfmap.rst <- data.frame(DC1=dfmap$DC1, DC2=dfmap$DC2, DC3=dfmap$DC3, type=type, names=colnames(Gene.cnt.scaled))
   if(plot) { 
-    p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color=~type, colors = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#a0a013","#dd4444")) %>%
-      add_markers() %>%
-      layout(scene = list(xaxis = list(title = 'DC1'),
+    if(html) {
+      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color=~type, colors = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#a0a013","#dd4444")) %>%
+        add_markers() %>%
+        layout(scene = list(xaxis = list(title = 'DC1'),
                           yaxis = list(title = 'DC2'),
                           zaxis = list(title = 'DC3')))
-    html.name <- ifelse(html.keyword=="", "diffusionmap.html", paste0("diffusionmap.", html.keyword, ".html"))
-    htmlwidgets::saveWidget(as_widget(p), html.name)
+      html.name <- ifelse(html.keyword=="", "diffusionmap.html", paste0("diffusionmap.", html.keyword, ".html"))
+      htmlwidgets::saveWidget(as_widget(p), html.name)
+    }
     plot(dfmap, col=type, pch=20)
   }
   display <- intersect(display, rownames(gene_expr))
@@ -398,14 +400,16 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
     nrowplot <- plot_nrow
     ngene <- length(display)
     pl <- lapply(1:ngene, function(x) {
-      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color= gene_expr[display[x],], colors = rev(rainbow(3))) %>%
-        add_markers() %>%
-        layout(scene = list(xaxis = list(title = 'DC1'),
-                            yaxis = list(title = 'DC2'),
-                            zaxis = list(title = 'DC3')))
-      html.name <- ifelse(html.keyword=="", paste0("diffusionmap_", display[x],".html"), 
-                          paste0("diffusionmap_", html.keyword, "_", display[x], ".html"))
-      htmlwidgets::saveWidget(as_widget(p), html.name)
+      if(html) {
+        p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color= gene_expr[display[x],], colors = rev(rainbow(3))) %>%
+          add_markers() %>%
+          layout(scene = list(xaxis = list(title = 'DC1'),
+                              yaxis = list(title = 'DC2'),
+                              zaxis = list(title = 'DC3')))
+        html.name <- ifelse(html.keyword=="", paste0("diffusionmap_", display[x],".html"), 
+                            paste0("diffusionmap_", html.keyword, "_", display[x], ".html"))
+        htmlwidgets::saveWidget(as_widget(p), html.name)
+      }
       ### 
       ggplot(dfmap.rst, aes(DC1, DC2, color = gene_expr[display[x],])) + geom_point(size=1) + theme_graphOnly() + 
         scale_colour_gradientn(colors = topo.colors(10), guide=guide_colorbar(barheight=unit(3,"cm"))) + labs(color=display[x])
