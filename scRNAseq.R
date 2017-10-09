@@ -390,7 +390,8 @@ diffusionmap.analysis <- function(Gene.cnt.scaled, dims = 1:3, dist.method=c("eu
   dfmap.rst <- data.frame(DC1=dfmap$DC1, DC2=dfmap$DC2, DC3=dfmap$DC3, type=type, names=colnames(Gene.cnt.scaled))
   if(plot) { 
     if(html) {
-      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color=~type, colors = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#a0a013","#dd4444")) %>%
+      p <- plot_ly(dfmap.rst, x = ~DC1, y = ~DC2, z = ~DC3, color=~type, sizes=c(1,10), 
+                   colors = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#a0a013","#dd4444")) %>%
         add_markers() %>%
         layout(scene = list(xaxis = list(title = 'DC1'),
                           yaxis = list(title = 'DC2'),
