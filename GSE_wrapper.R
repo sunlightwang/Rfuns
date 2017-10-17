@@ -79,7 +79,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   if(gs_enrich_plot) {
     n_page <- plot.nrow * plot.ncol
     n_plot <- nrow(camera.rst.topN) 
-    idx.split <- split(n_plot, floor((n_plot-1)/n_page))
+    idx.split <- split(1:n_plot, floor((n_plot-1)/n_page))
     lapply(idx.split, function(x) {
       camera.rst.topN.GS <- rownames(camera.rst.topN[x,])
       cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
