@@ -80,8 +80,8 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     n_page <- plot.nrow * plot.ncol
     n_plot <- nrow(camera.rst.topN) 
     idx.split <- split(1:n_plot, floor((1:n_plot-1)/n_page))
-    lapply(idx.split, function(x) {
-      camera.rst.topN.GS <- rownames(camera.rst.topN[x,])
+    lapply(idx.split, function(xx) {
+      camera.rst.topN.GS <- rownames(camera.rst.topN[xx,])
       cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
       ## sample 
       sample.mean_expr <- do.call(rbind, lapply(cat2genes.idx.topN, function(x) colMeans(expr_log2[x,])))
