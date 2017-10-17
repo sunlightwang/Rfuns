@@ -80,8 +80,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     n_page <- plot.nrow * plot.ncol
     n_plot <- nrow(camera.rst.topN) 
     idx.split <- split(1:n_plot, floor((1:n_plot-1)/n_page))
-    lapply(idx.split, function(xx) {
-      print(xx)
+    p.list <- lapply(idx.split, function(xx) {
       camera.rst.topN.GS <- rownames(camera.rst.topN[xx,])
       cat2genes.idx.topN <- cat2genes.idx[camera.rst.topN.GS]
       ## sample 
@@ -90,16 +89,16 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
       require(reshape2)
       df <- melt(sample.mean_expr)
       colnames(df) <- c("ID","type","expr")
-      print(xx)                               
       p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=0.5) + geom_point(size=0.5) + 
                  facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol, labeller=label_wrap_gen(width=30)) + 
                  theme_Publication() + theme(strip.text = element_text(face="plain", size=rel(0.5)))
-      print(p)
+      return(p)
       ## genes       
       #s1.idx <- design[,2] == unique(design[,2])[1]
       #s2.idx <- design[,2] == unique(design[,2])[2]
       #lapply(cat2genes.idx.topN, function(x) cbind(rowMeans(expr_log2[x,s1.idx]),rowMeans(expr_log2[x,s2.idx])))
-    })                  
+    })      
+    return(p.list)
   } else { 
     return(camera.rst.topN)
   }
