@@ -88,9 +88,12 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
       require(reshape2)
       df <- melt(sample.mean_expr)
       colnames(df) <- c("ID","type","expr")
-      p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=0.5) + geom_point(size=0.5) + 
-                 facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol, labeller=label_wrap_gen(width=30)) + 
-                 theme_Publication() + theme(strip.text = element_text(face="plain", size=rel(0.5)))
+      p <- ggplot(df, aes(x=type, y=expr)) + geom_boxplot(aes(color=type), size=0.5) + 
+               facet_wrap(~ ID, scales="free",nrow=plot.nrow,ncol=plot.ncol, labeller=label_wrap_gen(width=30)) + 
+               theme_Publication() + theme(strip.text = element_text(face="plain", size=rel(0.5)))
+      if( mean(table(sample.cat)) < 30 ) {
+        p <- p + geom_point(size=0.5) 
+      } 
       return(p)
       ## genes       
       #s1.idx <- design[,2] == unique(design[,2])[1]
