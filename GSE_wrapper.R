@@ -43,9 +43,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
 ### CAMERA
 run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                        test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), inter_gene_cor=TRUE, FDR=0.1, 
-                       minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20, plot.nrow=4, plot.ncol=5) {
-  
-  design <- cbind(Intercept=1,Group=as.numeric(as.factor(sample.cat))-1) 
+                       minSize=10, maxSize=3000, gs_enrich_plot=T, topN=20, plot.nrow=4, plot.ncol=5, 
+                       design = cbind(Intercept=1,Group=as.numeric(as.factor(sample.cat))-1), ... ) {
   require(goseq)
   reversemapping <- function(map) {
     tmp=unlist(map,use.names=FALSE)
@@ -71,7 +70,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
   }
   inter.gene.cor <- ifelse(inter_gene_cor, 0.01, 0)
 
-  camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor)
+  camera.rst <- camera(expr_log2, cat2genes.idx, design, inter.gene.cor=inter.gene.cor, ...)
   N <- sum(camera.rst$FDR < FDR)
   camera.rst.topN <- camera.rst[1:min(N,topN), ]
   write.table(camera.rst.topN, sep="\t", quote=F)
