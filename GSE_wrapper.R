@@ -29,7 +29,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df <- data.frame(term=substr(pvals$term, 1, 51), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")))[1:topN,]
     }
-    p <- ggplot(df[order(df$FDR, -df$enrichment),], aes(x=term, y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
+    p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
     coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red") + 
     geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
     return(p)
