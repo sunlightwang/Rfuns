@@ -70,3 +70,7 @@ scale_colour_Publication <- function(...){
 scale_colour_Rainbow <- function(size = 10, ...){
   discrete_scale("colour","Rainbow", manual_pal(values = rainbow(size)), ...)
 }
+
+scale_fill_Rainbow <- function(size = 10, ...){
+  discrete_scale("fill","Rainbow", manual_pal(values = rainbow(size)), ...)
+}
