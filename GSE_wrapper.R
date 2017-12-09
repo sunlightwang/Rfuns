@@ -105,3 +105,19 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
     return(camera.rst.topN)
   }
 }
+
+                                  
+GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
+                     GS.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG")) {
+  require(goseq)
+  reversemapping <- function(map) {
+    tmp=unlist(map,use.names=FALSE)
+    names(tmp)=rep(names(map),times=as.numeric(summary(map)[,1]))
+    return(split(names(tmp),as.vector(tmp)))
+  }
+  gene2cat <- getgo(allGenes, genome, geneID, fetch.cats=GS.cats)
+  names(gene2cat)=rownames(expr_log2)
+  cat2gene=reversemapping(gene2cat)
+  gene2cat=reversemapping(cat2gene)
+  list(cat2gene, gene2cat)
+}
