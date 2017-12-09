@@ -120,7 +120,7 @@ GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol
   cat2gene=reversemapping(gene2cat)
   gene2cat=reversemapping(cat2gene)
   
-  if(test.cats == "KEGG") {
+  if(GS.cats == "KEGG") {
     require(KEGG.db)
     xx <- as.list(KEGGPATHID2NAME)
     names(cat2gene) <- unlist(xx[names(cat2gene)])
@@ -132,3 +132,4 @@ GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol
   cat2gene
   #list(cat2gene=cat2gene, gene2cat=gene2cat)
 }
+                                  
