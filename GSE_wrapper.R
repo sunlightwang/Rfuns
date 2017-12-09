@@ -116,7 +116,7 @@ GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol
     return(split(names(tmp),as.vector(tmp)))
   }
   gene2cat <- getgo(allGenes, genome, geneID, fetch.cats=GS.cats)
-  names(gene2cat)=rownames(expr_log2)
+  names(gene2cat)=allGenes
   cat2gene=reversemapping(gene2cat)
   gene2cat=reversemapping(cat2gene)
   list(cat2gene, gene2cat)
