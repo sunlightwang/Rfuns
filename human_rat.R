@@ -9,7 +9,7 @@ require("biomaRt")
 RatGeneToHuman <- function(genelist){
   human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   rat = useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
-  genes = getLDS(attributes = c("rgd_symbol"), filters = "mgi_symbol", values = genelist, 
+  genes = getLDS(attributes = c("rgd_symbol"), filters = "rgd_symbol", values = genelist, 
     mart = rat, attributesL = c("hgnc_symbol"), martL = human, uniqueRows=T)
   return(genes)
 }
