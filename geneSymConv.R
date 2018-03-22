@@ -17,3 +17,19 @@ HumanGeneToMouse <- function(genelist){
     mart = human, attributesL = c("mgi_symbol"), martL = mouse, uniqueRows=T)
   return(genes)
 }
+
+MouseGeneToHuman.ens <- function(genelist){
+  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  genes = getLDS(attributes = c("ensembl_gene_id"), filters = "ensembl_gene_id", values = genelist, 
+    mart = mouse, attributesL = c("ensembl_gene_id"), martL = human, uniqueRows=T)
+  return(genes)
+}
+
+HumanGeneToMouse.ens <- function(genelist){
+  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  genes = getLDS(attributes = c("ensembl_gene_id"), filters = "ensembl_gene_id", values = genelist, 
+    mart = human, attributesL = c("ensembl_gene_id"), martL = mouse, uniqueRows=T)
+  return(genes)
+}
