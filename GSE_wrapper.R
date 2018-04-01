@@ -4,8 +4,9 @@ library(goseq)
 
 # GOSeq
 run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
-                               test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
-                               minSize=10, maxSize=3000, gs_enrich_plot=T, padj_cutoff=0.05, topN=20) {
+                      test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
+                      minSize=10, maxSize=3000, gs_enrich_plot=T, padj_cutoff=0.05, topN=20, 
+                      enrichment.limit=c(1,8)) {
   DEgenes <- rep(0, length(Allgenelist))
   names(DEgenes) <- Allgenelist
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
@@ -29,9 +30,10 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df <- data.frame(term=substr(pvals$term, 1, 51), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")))[1:topN,]
     }
+    df$enrichment [ df$enrichment > enrichment.limit[2] ] <- enrichment.limit[2]
     p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
     coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
-    scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=c(1, 8)) + 
+    scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
     geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
     return(p)
   }
