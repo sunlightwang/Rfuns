@@ -31,7 +31,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     }
     p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
     coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
-    scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2) + 
+    scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=c(1, 8)) + 
     geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
     return(p)
   }
