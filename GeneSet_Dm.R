@@ -54,7 +54,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   if(plot) { 
     if( nrow(result.sig) > maxPlotTerm ) { result.sig <- result.sig[1:maxPlotTerm,] }
     margin_add <- 0
-    if( nrow(result.sig) < maxPlotTerm ) { margin_add <- (maxPlotTerm - nrow(result.sig)) * 5 / 4 }
+    if( nrow(result.sig) < maxPlotTerm ) { margin_add <- (maxPlotTerm - nrow(result.sig)) * 5 / 3 }
     p <- ggplot(result.sig, aes(x=reorder(desc, -padj), y=-log10(padj))) + geom_bar(aes(fill=EnrichFold), stat="identity") +
           coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + scale_fill_continuous(low="yellow", high="red") + 
           geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") + 
