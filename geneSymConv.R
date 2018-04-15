@@ -34,6 +34,14 @@ HumanGeneToMouse <- function(genelist){
   return(genes)
 }
 
+HumanGeneToPig <- function(genelist){
+  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  pig = useMart("ensembl", dataset = "sscrofa_gene_ensembl")
+  genes = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = genelist, 
+    mart = human, attributesL = c("hgnc_symbol"), martL = pig, uniqueRows=T)
+  return(genes)
+}
+
 MouseGeneToHuman.ens <- function(genelist){
   human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
