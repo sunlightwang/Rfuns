@@ -10,6 +10,22 @@ MouseGeneToHuman <- function(genelist){
   return(genes)
 }
 
+PigGeneToHuman <- function(genelist){
+  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  pig = useMart("ensembl", dataset = "sscrofa_gene_ensembl")
+  genes = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = genelist, 
+    mart = pig, attributesL = c("hgnc_symbol"), martL = human, uniqueRows=T)
+  return(genes)
+}
+
+MonkeyGeneToHuman <- function(genelist){
+  human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  monkey = useMart("ensembl", dataset = "mfascicularis_gene_ensembl")
+  genes = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = genelist, 
+    mart = monkey, attributesL = c("hgnc_symbol"), martL = human, uniqueRows=T)
+  return(genes)
+}
+
 HumanGeneToMouse <- function(genelist){
   human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
