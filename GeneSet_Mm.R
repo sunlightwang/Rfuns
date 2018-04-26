@@ -1,15 +1,15 @@
 source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/theme.R")
 library(GO.db)
 library(AnnotationDbi)
-library(org.Dm.eg.db)
+library(org.Mm.eg.db)
 
-loadGO <- function(geneIDtype=c("FLYBASE", "SYMBOL","ENSEMBL"), 
+loadGO <- function(geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
                    type=c("BP", "MF", "CC")) {
   type <- match.arg(type, c("BP", "MF", "CC"))
   GoTerms <- as.list(GOTERM)
   GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
   GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
-  annots <- select(org.Dm.eg.db, keys=GoVect,
+  annots <- select(org.Mm.eg.db, keys=GoVect,
                    columns=geneIDtype, keytype="GOALL") # GOALL includes GO child notes
 
   # rm NAs
