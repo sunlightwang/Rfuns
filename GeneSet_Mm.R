@@ -20,7 +20,7 @@ loadGO <- function(geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNI
   data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
 
-GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10, maxBgHit=3000, plot=T, maxPlotTerm=25) { 
+GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHit=5, minBgHit=10, maxBgHit=1000, plot=T, maxPlotTerm=25) { 
   uniqGeneID <- unique(annots$Gene)
   if(is.null(bgGeneList)) {bgGeneList <- uniqGeneID}
   #totalN <- length(intersect(bgGeneList, uniqGeneID))
