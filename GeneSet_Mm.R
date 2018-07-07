@@ -49,7 +49,7 @@ GS_enrich <- function(GeneList, bgGeneList=NULL, annots, padj_cutoff=0.05, minHi
   result <- result[order(padj),]
   desc <- unique(data.frame(annots$GeneSet, annots$Desc))
   rownames(desc) <- desc$annots.GeneSet
-  result <- data.frame(result, desc=substr(as.character(noquote(desc[rownames(result),2])), 1, 51))
+  result <- data.frame(result, desc=substr(as.character(noquote(desc[rownames(result),2])), 1, 61))
   result.sig <- result[result$padj < padj_cutoff, ]
   if(plot) { 
     if( nrow(result.sig) > maxPlotTerm ) { result.sig <- result.sig[1:maxPlotTerm,] }
