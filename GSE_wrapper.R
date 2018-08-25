@@ -30,8 +30,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     df <- data.frame(term=substr(pvals$term, 1, 51), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")))
   }
-  df$enrichment [ df$enrichment > enrichment.limit[2] ] <- enrichment.limit[2]
   if(gs_enrich_plot) {
+    df$enrichment [ df$enrichment > enrichment.limit[2] ] <- enrichment.limit[2]
     df <- df[1:topN,]
     p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
     coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
@@ -39,7 +39,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
     return(p)
   }
-  return(subset(df, FDR<padj_cutoff))
+  return(subset(df, FDR > -log10(padj_cutoff)))
 }
 
 # pvals.1 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", TRUE)
