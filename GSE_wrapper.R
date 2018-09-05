@@ -31,8 +31,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")), geneSet=pvals$category)
   }
   if(gene.list) {
-    GS2gene <- do.call(rbind, lapply(GS.gene.map(DEgenelist, genome=genome, geneID=geneID, GS.cats=test.cats), function(x) 
-      paste(x, collapse=",")))                                     
+    GS2gene <- do.call(rbind, lapply(GS.gene.map(DEgenelist, genome=genome, geneID=geneID, GS.cats=test.cats, return.ID=TRUE), 
+                                     function(x) paste(x, collapse=",")))                                     
     gene.list <- GS2gene[match(as.character(df$geneSet), rownames(GS2gene)),]                                
     df <- data.frame(df, gene.list=gene.list)
   }
@@ -119,7 +119,7 @@ run_camera <- function(expr_log2, sample.cat=c(1,1,2,2), genome=c("hg19", "mm10"
 
                                   
 GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
-                     GS.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG")) {
+                     GS.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), return.ID=FALSE) {
   require(goseq)
   reversemapping <- function(map) {
     tmp=unlist(map,use.names=FALSE)
@@ -130,7 +130,9 @@ GS.gene.map <- function(allGenes, genome=c("hg19", "mm10"), geneID=c("geneSymbol
   names(gene2cat)=allGenes
   cat2gene=reversemapping(gene2cat)
   gene2cat=reversemapping(cat2gene)
-  
+  if(return.ID) { 
+    return(cat2gene)
+  }
   if(GS.cats == "KEGG") {
     require(KEGG.db)
     xx <- as.list(KEGGPATHID2NAME)
