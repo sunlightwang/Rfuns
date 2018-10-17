@@ -4,13 +4,13 @@ library(goseq)
 
 # GOSeq
 run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
-                      test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE,
+                      test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE, bias.data=NULL, 
                       minSize=10, maxSize=3000, gs_enrich_plot=T, padj_cutoff=0.05, topN=20, 
                       enrichment.limit=c(1,8), gene.list=FALSE, FDR=TRUE, pval_cutoff=0.05) {
   DEgenes <- rep(0, length(Allgenelist))
   names(DEgenes) <- Allgenelist
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
-  pwf <- nullp(DEgenes, genome, geneID, plot.fit=F)
+  pwf <- nullp(DEgenes, genome, geneID, bias.data=bias.data, plot.fit=F)
   if(geneLengthCorrect) {
     pvals <- goseq(pwf, genome, geneID, test.cats=test.cats, method="Wallenius", use_genes_without_cat=T)
   } else {
