@@ -49,7 +49,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       return(p) 
     } else {
       p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_bar(aes(fill=enrichment),stat="identity") +
-        coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
+        coord_flip() + ylab("-log10(P value)") + xlab("") + theme_Publication() + 
         scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
         geom_hline(yintercept=-log10(pval_cutoff), color="grey50", linetype="dashed") 
       return(p)
