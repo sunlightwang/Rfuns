@@ -55,7 +55,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       return(p)
     }
   }
-  return(subset(df, FDR > -log10(padj_cutoff)))
+  if(FDR) {return(subset(df, FDR > -log10(padj_cutoff)))}
+  if(!FDR) {return(subset(df, p.value > -log10(pval_cutoff)))}
 }
 
 # pvals.1 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", TRUE)
