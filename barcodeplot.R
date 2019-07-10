@@ -24,12 +24,12 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,text=paste0("Rs=",r)))
   ## plots
   if(colorbysize) {  
-    p <- ggplot(data1) + geom_point(aes(x,y,color=size)) 
+    p <- ggplot(data1) + geom_point(aes(x,y,color=size)) + scale_discrete_manual("color")
   } else {
     p <- ggplot(data1) + geom_point(aes(x,y))
   }
-  p <- p + scale_x_continuous(limits=c(0.08, max(data1$x)), trans='log10',breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000))  +  
-    scale_y_continuous(limits=c(0.08, max(data1$y)), trans='log10', breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000)) + 
+  p <- p + scale_x_continuous(limits=c(0.08, max(data1$x)*1.25), trans='log10',breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000))  +  
+    scale_y_continuous(limits=c(0.08, max(data1$y)*1.25), trans='log10', breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000)) + 
     xlab(sample1) + ylab(sample2)
   p <- p + geom_polygon(data=datapoly.x, mapping=aes(x,y), fill="grey50",alpha=0.3) + 
     geom_polygon(data=datapoly.y, mapping=aes(x,y), fill="grey50",alpha=0.3)
