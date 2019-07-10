@@ -3,10 +3,11 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   require(ggplot2)
   require(cowplot)
   ## selecte data
-  data0 <- data.frame(x=data[,sample1], y=data[,sample2], size=nchar(rownames(data)))
+  data0 <- data.frame(x=data[,sample1], y=data[,sample2])
   data0 <- data0[apply(data0, 1, sum)>0, ]
   data1 <- data0
   data1[data1 == 0] <- 0.1
+  data1 <- data.frame(data1, size=nchar(rownames(data1)))
   data2 <- data0[apply(data0>0, 1, all), ]
   ## both non-zero correlation 
   r <- signif(cor(data2, method="spearman")[2,1],3)
@@ -22,9 +23,10 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   data.text <- data.frame(x=c(0.1, r1[2]*1.3), y=c(r2[2]*1.3, 0.1), text=paste0(c(p.y,p.x),"%"))
   data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,text=paste0("Rs=",r)))
   ## plots
-  p <- ggplot(data1, aes(x,y)) + geom_point()
   if(colorbysize) {  
     p <- ggplot(data1, aes(x,y,color=size)) + geom_point() 
+  } else {
+    p <- ggplot(data1, aes(x,y)) + geom_point()
   }
   p <- p + scale_x_continuous(limits=c(0.08, max(data1$x)), trans='log10',breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000))  +  
     scale_y_continuous(limits=c(0.08, max(data1$y)), trans='log10', breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000)) + 
