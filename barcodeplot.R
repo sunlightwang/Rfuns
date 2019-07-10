@@ -1,9 +1,9 @@
 
-barcodeplot <- function(data, sample1="rep1", sample2="rep2") {
+barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   require(ggplot2)
   require(cowplot)
   ## selecte data
-  data0 <- data.frame(x=data[,sample1], y=data[,sample2])
+  data0 <- data.frame(x=data[,sample1], y=data[,sample2], size=nchar(rownames(data)))
   data0 <- data0[apply(data0, 1, sum)>0, ]
   data1 <- data0
   data1[data1 == 0] <- 0.1
@@ -22,8 +22,11 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2") {
   data.text <- data.frame(x=c(0.1, r1[2]*1.3), y=c(r2[2]*1.3, 0.1), text=paste0(c(p.y,p.x),"%"))
   data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,text=paste0("Rs=",r)))
   ## plots
-  p <- ggplot(data1, aes(x,y))+geom_point()+ 
-    scale_x_continuous(limits=c(0.08, max(data1$x)), trans='log10',breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000))  +  
+  p <- ggplot(data1, aes(x,y)) + geom_point()
+  if(colorbysize) {  
+    p <- ggplot(data1, aes(x,y,color=size)) + geom_point() 
+  }
+  p <- p + scale_x_continuous(limits=c(0.08, max(data1$x)), trans='log10',breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000))  +  
     scale_y_continuous(limits=c(0.08, max(data1$y)), trans='log10', breaks=c(0.1, 1, 10,100,1000,10000), labels=c(0,1,10,100,1000,10000)) + 
     xlab(sample1) + ylab(sample2)
   p <- p + geom_polygon(data=datapoly.x, mapping=aes(x,y), fill="grey50",alpha=0.3) + 
