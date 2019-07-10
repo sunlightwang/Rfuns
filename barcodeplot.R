@@ -24,7 +24,7 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,text=paste0("Rs=",r)))
   ## plots
   if(colorbysize) {  
-    p <- ggplot(data1) + geom_point(aes(x,y,color=size)) + scale_discrete_manual("color")
+    p <- ggplot(data1) + geom_point(aes(x,y,color=size))
   } else {
     p <- ggplot(data1) + geom_point(aes(x,y))
   }
