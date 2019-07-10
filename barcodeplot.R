@@ -7,7 +7,7 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorbysize=F) {
   data0 <- data0[apply(data0, 1, sum)>0, ]
   data1 <- data0
   data1[data1 == 0] <- 0.1
-  data1 <- data.frame(data1, size=factor(nchar(rownames(data1)), levels=c(1,3,5,7,9))
+  data1 <- data.frame(data1, size=factor(nchar(rownames(data1)), levels=c(1,3,5,7,9)))
   data2 <- data0[apply(data0>0, 1, all), ]
   ## both non-zero correlation 
   r <- signif(cor(data2, method="spearman")[2,1],3)
