@@ -11,7 +11,7 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
   data1 <- data0
   data1$x[data1$x==0] <- 0.1
   data1$y[data1$y==0] <- 0.1
-  data2 <- data0[apply(data0[,c("x","y")]>0, 1, all), ]
+  data2 <- data0[apply(data0[,c("x","y")]>0, 1, all), c("x","y")]
   ## both non-zero correlation 
   r <- signif(cor(data2, method="spearman")[2,1],3)
   ## one-zero range
