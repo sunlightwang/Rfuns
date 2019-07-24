@@ -1,6 +1,7 @@
 library(ggplot2)
 library(cowplot)
 theme_set(theme_cowplot())
+library(RVAideMemoire)
 
 barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
   ## selecte data
@@ -17,6 +18,9 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
   data2 <- data0[apply(data0[,c("x","y")]>0, 1, any), c("x","y")]
   ## both non-zero correlation 
   r <- signif(cor(data2, method="spearman")[2,1],3)
+  r.ci <- spearman.ci(data2[,1], data2[,2], nrep = 1000, conf.level = 0.95)
+  rlo <- signif(unname(r.ci$conf.int[1]),3)
+  rup <- signif(unname(r.ci$conf.int[2]),3)
   ## one-zero range
   r1 <- range(data0[data0[,"y"]==0, "x"])
   r2 <- range(data0[data0[,"x"]==0, "y"])
@@ -27,7 +31,8 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
   p.x <- signif(sum(data0[,"y"]==0)/nrow(data0) * 100, 3)
   p.y <- signif(sum(data0[,"x"]==0)/nrow(data0) * 100, 3)
   data.text <- data.frame(x=c(0.1, r1[2]*1.3), y=c(r2[2]*1.3, 0.1), text=paste0(c(p.y,p.x),"%"))
-  data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,text=paste0("Rs=",r)))
+  data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,
+                                           text=paste0("R=", r, " (", rlo, ",", rup, ")")))
   ## plots
   if(!is.null(colorby)) {
     p <- ggplot(data1) + geom_point(aes(x,y,color=col)) + labs(color=colorby) 
