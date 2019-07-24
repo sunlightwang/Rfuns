@@ -4,16 +4,15 @@ theme_set(theme_cowplot())
 
 barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
   ## selecte data
-  if(!is.null(colorby)) {
-    colorby <- match.arg(colorby, c("size", colnames(data)))
-  }
+  colorby <- match.arg(colorby, c("size", colnames(data)))
   data <- data.frame(data, size=factor(nchar(rownames(data)), levels=c(1,3,5,7,9)))
   data0 <- data.frame(x=data[,sample1], y=data[,sample2], col=data[,colorby], row.names=rownames(data))
   data0 <- data0[apply(data0[,c("x","y")], 1, sum)>0, ]
   data1 <- data0
   data1$x[data1$x==0] <- 0.1
   data1$y[data1$y==0] <- 0.1
-  data2 <- data0[apply(data0[,c("x","y")]>0, 1, all), c("x","y")]
+  #data2 <- data0[apply(data0[,c("x","y")]>0, 1, all), c("x","y")]
+  data2 <- data0[apply(data0[,c("x","y")]>0, 1, any), c("x","y")]
   ## both non-zero correlation 
   r <- signif(cor(data2, method="spearman")[2,1],3)
   ## one-zero range
