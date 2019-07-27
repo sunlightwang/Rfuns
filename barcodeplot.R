@@ -3,7 +3,7 @@ library(cowplot)
 theme_set(theme_cowplot())
 library(RVAideMemoire)
 
-barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
+barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL, plot.ci=FALSE) {
   ## selecte data
   if(!is.null(colorby)) {	
     colorby <- match.arg(colorby, c("size", colnames(data)))
@@ -44,5 +44,12 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL) {
     xlab(sample1) + ylab(sample2)
   p <- p + geom_polygon(data=datapoly.x, mapping=aes(x,y), fill="grey50",alpha=0.3) + 
     geom_polygon(data=datapoly.y, mapping=aes(x,y), fill="grey50",alpha=0.3)
-  p + geom_text(aes(x,y,label = text), data=data.text, hjust=0, vjust=0)
+  p <- p + geom_text(aes(x,y,label = text), data=data.text, hjust=0, vjust=0)
+  if(plot.ci) {
+    source("https://raw.githubusercontent.com/sunlightwang/Rfuns/master/Poisson_CI.R")
+    ci <- Poisson_CI(sum(data[,sample1]), sum(data[,sample2]), plot=FALSE)
+    p + geom_path(data=ci, mapping = aes(x=10^x,y=10^y,group=name), linetype="dashed", color="grey50")
+  } else {
+    return(p)
+  }
 }
