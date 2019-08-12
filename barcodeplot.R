@@ -32,7 +32,7 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL, plot
   p.y <- signif(sum(data0[,"x"]==0)/nrow(data0) * 100, 2)
   data.text <- data.frame(x=c(0.1, r1[2]*1.3), y=c(r2[2]*1.3, 0.1), text=paste0(c(p.y,p.x),"%"))
   data.text <- rbind(data.text, data.frame(x=1,y=max(data1$y)*0.8,
-                                           text=paste0("R=", r, " (", rlo, ",", rup, ")")))
+                                           text=paste0("r=", r, " (", rlo, ",", rup, ")")))
   ## plots
   if(!is.null(colorby)) {
     p <- ggplot(data1) + geom_point(aes(x,y,color=col)) + labs(color=colorby) 
