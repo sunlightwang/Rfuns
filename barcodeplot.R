@@ -53,3 +53,13 @@ barcodeplot <- function(data, sample1="rep1", sample2="rep2", colorby=NULL, plot
     return(p)
   }
 }
+
+nonzero.cor <- function(data) { ## data: samples in columns
+  sapply(1:ncol(data), function(i) {
+    sapply(1:ncol(data), function(j) {
+      data0 <- data[,c(i,j)]
+      data1 <- data0[apply(data0>0, 1, any), ]
+      cor(data1, method="spearman")[2,1]
+    })
+  })
+}
