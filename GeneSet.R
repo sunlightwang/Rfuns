@@ -10,11 +10,11 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
   if(org == "mouse") {
     require(org.Mm.eg.db)
-    annots <- select(org.Mm.eg.db, keys=GoVect,
+    annots <- AnnotationDbi::select(org.Mm.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GOALL") # GOALL includes GO child notes
   } else {
     require(org.Hs.eg.db)
-    annots <- select(org.Hs.eg.db, keys=GoVect,
+    annots <- AnnotationDbi::select(org.Hs.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GOALL") # GOALL includes GO child notes
   }
   # rm NAs
@@ -34,11 +34,11 @@ GO.list <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEM
   GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
   if(org == "mouse") {
     require(org.Mm.eg.db)
-    annots <- select(org.Mm.eg.db, keys=GoVect,
+    annots <- AnnotationDbi::select(org.Mm.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GO")
   } else {
     require(org.Hs.eg.db)
-    annots <- select(org.Hs.eg.db, keys=GoVect,
+    annots <- AnnotationDbi::select(org.Hs.eg.db, keys=GoVect,
                      columns=geneIDtype, keytype="GO") 
   }
   # rm NAs
