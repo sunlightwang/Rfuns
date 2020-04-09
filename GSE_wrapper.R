@@ -56,10 +56,14 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         return(p)
       } 
     } else { 
+      head(df)
       df <- df[rev(rank(df$enrichment)), ]
+      head(df)
       if(FDR) {
         df <- df[df$FDR > -log10(0.05), ] 
+        head(df)
         df <- df[1:topN,]
+        head(df)
         p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
           scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=4) + 
