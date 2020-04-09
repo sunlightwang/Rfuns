@@ -28,7 +28,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
                      p.value = -log10(pvals$over_represented_pvalue), 
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")), geneSet=pvals$category)
   } else {
-    df <- data.frame(term=substr(pvals$term, 1, 51), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
+    df <- data.frame(term=substr(pvals$term, 1, 76), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
                      p.value = -log10(pvals$over_represented_pvalue), 
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")), geneSet=pvals$category)
   }
@@ -61,19 +61,19 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       names(enrichment) <- 1:length(enrichment)
       df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
       if(FDR) {
-        df <- df[df$FDR > -log10(0.05) & !is.na(df$FDR), ] 
+        df <- df[df$FDR > -log10(0.01) & !is.na(df$FDR), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=4) + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
       } else {
-        df <- df[df$p.value > -log10(0.05) & !is.na(df$p.value), ] 
+        df <- df[df$p.value > -log10(0.01) & !is.na(df$p.value), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=4) + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
       }  
