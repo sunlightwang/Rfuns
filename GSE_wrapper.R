@@ -73,7 +73,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
           scale_fill_gradient2(low="red", mid="orange", high="yellow", midpoint=4) + 
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
-      }
+      }  
+    }
   }
   if(FDR) {return(subset(df, FDR > -log10(padj_cutoff)))}
   if(!FDR) {return(subset(df, p.value > -log10(pval_cutoff)))}
