@@ -58,19 +58,19 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     } else { 
       df <- df[rev(rank(df$enrichment)), ]
       if(FDR) {
-        df <- df[df$FDR < 0.05, ] 
+        df <- df[df$FDR > -log10(0.05), ] 
         df <- df[1:topN,]
-        p <- ggplot(df, aes(x=term, y=enrichment)) + geom_bar(aes(fill=log10(FDR)),stat="identity") +
+        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="red", mid="orange", high="yellow", midpoint=4) + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=4) + 
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
       } else {
-        df <- df[df$p.value < 0.05, ] 
+        df <- df[df$p.value > -log10(0.05), ] 
         df <- df[1:topN,]
-        p <- ggplot(df, aes(x=term, y=enrichment)) + geom_bar(aes(fill=log10(p.value)),stat="identity") +
+        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="red", mid="orange", high="yellow", midpoint=4) + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=4) + 
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
       }  
