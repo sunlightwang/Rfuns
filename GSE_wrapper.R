@@ -61,7 +61,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       names(enrichment) <- 1:length(enrichment)
       df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
       if(FDR) {
-        df <- df[df$FDR > -log10(0.01) & !is.na(df$FDR), ] 
+        df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
@@ -69,7 +69,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
           geom_hline(yintercept=1, color="grey50", linetype="dashed")
         return(p) 
       } else {
-        df <- df[df$p.value > -log10(0.01) & !is.na(df$p.value), ] 
+        df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
           coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
