@@ -56,8 +56,11 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         return(p)
       } 
     } else { 
+      df <- subset(df, !is.na(enrichment))
       print(head(df))
-      df <- df[rev(rank(df$enrichment, na.last = NA, ties.method= "random")), ]
+      enrichment <- df$enrichment
+      names(enrichment) <- 1:length(enrichment)
+      df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
       print(head(df))
       if(FDR) {
         df <- df[df$FDR > -log10(0.05) & !is.na(df$FDR), ] 
