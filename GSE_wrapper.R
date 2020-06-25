@@ -46,7 +46,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df <- df[1:topN,]
       if(FDR) {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR), stat="identity") +
+          p <- ggplot(df, aes(x=reorder(term, FDR), y=generatio, size=genenum)) + geom_point(aes(color=FDR), stat="identity") +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
           return(p)
         } else { 
@@ -58,7 +58,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         }
       } else {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
+          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
           return(p)
         } else {
@@ -77,19 +77,31 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       if(FDR) {
         df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
-        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
-          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-          geom_hline(yintercept=1, color="grey50", linetype="dashed")
-        return(p) 
+        if(dotplot) {
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR),stat="identity") +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+          return(p)
+        } else {
+          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
+            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+            geom_hline(yintercept=1, color="grey50", linetype="dashed")
+          return(p) 
+        }
       } else {
         df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
-        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
-          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-          geom_hline(yintercept=1, color="grey50", linetype="dashed")
-        return(p) 
+        if(dotplot) {
+          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+          return(p)
+        } else {
+          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
+            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+            geom_hline(yintercept=1, color="grey50", linetype="dashed")
+          return(p) 
+        }
       }  
     }
   }
