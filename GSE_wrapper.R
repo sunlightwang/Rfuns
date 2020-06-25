@@ -105,8 +105,14 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       }  
     }
   }
-  if(FDR) {return(subset(df, FDR > -log10(padj_cutoff)))}
-  if(!FDR) {return(subset(df, p.value > -log10(pval_cutoff)))}
+  if(FDR) {
+    df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ]
+    return(df)
+  }
+  if(!FDR) {
+    df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ]
+    return(df)
+  }
 }
 
 # pvals.1 <-  run_goseq(DEgenelist,  Allgenelist, "hg19", "geneSymbol", "GO:BP", TRUE)
