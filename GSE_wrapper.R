@@ -45,51 +45,49 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df$enrichment [ df$enrichment > enrichment.limit[2] ] <- enrichment.limit[2]
       df <- df[1:topN,]
       if(FDR) {
-        p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
-          coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
-          geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
+        if(dotplot) {
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR), stat="identity") +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+        } else { 
+          p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
+            coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
+            geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
+        }
         return(p) 
       } else {
-        p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_bar(aes(fill=enrichment),stat="identity") +
-          coord_flip() + ylab("-log10(P value)") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
-          geom_hline(yintercept=-log10(pval_cutoff), color="grey50", linetype="dashed") 
+        if(dotplot) {
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+        } else {
+          p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_bar(aes(fill=enrichment),stat="identity") +
+            coord_flip() + ylab("-log10(P value)") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
+            geom_hline(yintercept=-log10(pval_cutoff), color="grey50", linetype="dashed") 
+        }
         return(p)
       } 
-    } else { 
-      if(dotplot) {
-        if(FDR) {
-          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR), stat="identity") +
-            ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
-          return(p) 
-        } else {
-          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
-            ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
-          return(p)
-        }
+    } else {
+      df <- subset(df, !is.na(enrichment))
+      enrichment <- df$enrichment
+      names(enrichment) <- 1:length(enrichment)
+      df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
+      if(FDR) {
+        df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
+        if(nrow(df) > topN) { df <- df[1:topN,] }
+        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
+          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+          geom_hline(yintercept=1, color="grey50", linetype="dashed")
+        return(p) 
       } else {
-        df <- subset(df, !is.na(enrichment))
-        enrichment <- df$enrichment
-        names(enrichment) <- 1:length(enrichment)
-        df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
-        if(FDR) {
-          df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
-          if(nrow(df) > topN) { df <- df[1:topN,] }
-          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
-            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-            geom_hline(yintercept=1, color="grey50", linetype="dashed")
-          return(p) 
-        } else {
-          df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
-          if(nrow(df) > topN) { df <- df[1:topN,] }
-          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
-            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-            geom_hline(yintercept=1, color="grey50", linetype="dashed")
-          return(p) 
-        }
+        df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
+        if(nrow(df) > topN) { df <- df[1:topN,] }
+        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
+          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+          geom_hline(yintercept=1, color="grey50", linetype="dashed")
+        return(p) 
       }  
     }
   }
