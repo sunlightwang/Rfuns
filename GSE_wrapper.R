@@ -46,8 +46,9 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df <- df[1:topN,]
       if(FDR) {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, FDR), y=generatio, size=sqrt(genenum))) + geom_point(aes(color=FDR), stat="identity") +
-            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+          p <- ggplot(df, aes(x=reorder(term, FDR), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", low=1, high=10) + 
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA))
           return(p)
         } else { 
           p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
@@ -58,8 +59,9 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         }
       } else {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=sqrt(genenum))) + geom_point(aes(color=p.value),stat="identity") +
-            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
+          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", low=1, high=10) +
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA))
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_bar(aes(fill=enrichment),stat="identity") +
@@ -78,8 +80,9 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=sqrt(genenum))) + geom_point(aes(color=FDR),stat="identity") +
-            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red") 
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", low=1, high=10) + 
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA))
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
@@ -92,8 +95,9 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
         if(nrow(df) > topN) { df <- df[1:topN,] }
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=sqrt(genenum))) + geom_point(aes(color=p.value),stat="identity") +
-            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red") 
+          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) + 
+            coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", low=1, high=10) + 
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA))
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
