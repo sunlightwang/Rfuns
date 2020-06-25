@@ -60,16 +60,12 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     } else { 
       if(dotplot) {
         if(FDR) {
-          p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_point(aes(fill=enrichment),stat="identity") +
-            coord_flip() + ylab("-log10(FDR)") + xlab("") + theme_Publication() + 
-            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
-            geom_hline(yintercept=-log10(padj_cutoff), color="grey50", linetype="dashed") 
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR), stat="identity") +
+            ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
           return(p) 
         } else {
-          p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_point(aes(fill=enrichment),stat="identity") +
-            coord_flip() + ylab("-log10(P value)") + xlab("") + theme_Publication() + 
-            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=2, limits=enrichment.limit) + 
-            geom_hline(yintercept=-log10(pval_cutoff), color="grey50", linetype="dashed") 
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value),stat="identity") +
+            ylab("Gene ratio") + xlab("") + scale_color_gradient2(low="blue", mid="yellow", high="red", midpoint=4) 
           return(p)
         }
       } else {
