@@ -6,7 +6,7 @@ library(goseq)
 run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=c("geneSymbol"),
                       test.cats=c("GO:CC", "GO:BP", "GO:MF", "KEGG"), geneLengthCorrect=FALSE, bias.data=NULL, 
                       minSize=10, maxSize=3000, gs_enrich_plot=T, padj_cutoff=0.05, topN=20, sortBySig=TRUE, # otherwise sort by enrichment
-                      enrichment.limit=c(1,8), gene.list=FALSE, FDR=TRUE, pval_cutoff=0.05) {
+                      enrichment.limit=c(1,8), gene.list=FALSE, FDR=TRUE, pval_cutoff=0.05, dotplot=FALSE) {
   DEgenes <- rep(0, length(Allgenelist))
   names(DEgenes) <- Allgenelist
   DEgenes[ names(DEgenes) %in% DEgenelist] <- 1
@@ -25,10 +25,12 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
     library(KEGG.db)
     xx <- as.list(KEGGPATHID2NAME)
     df <- data.frame(term=unlist(xx[pvals$category]), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
+                     genenum = pvals$numDEInCat, generatio = pvals$numDEInCat/pvals$numInCat, 
                      p.value = -log10(pvals$over_represented_pvalue), 
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")), geneSet=pvals$category)
   } else {
     df <- data.frame(term=substr(pvals$term, 1, 76), enrichment=pvals$numDEInCat/pvals$numInCat/(fg.n/bg.n),
+                     genenum = pvals$numDEInCat, generatio = pvals$numDEInCat/pvals$numInCat, 
                      p.value = -log10(pvals$over_represented_pvalue), 
                      FDR=-log10(p.adjust(pvals$over_represented_pvalue, method="fdr")), geneSet=pvals$category)
   }
@@ -55,27 +57,29 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
           geom_hline(yintercept=-log10(pval_cutoff), color="grey50", linetype="dashed") 
         return(p)
       } 
-    } else { 
-      df <- subset(df, !is.na(enrichment))
-      enrichment <- df$enrichment
-      names(enrichment) <- 1:length(enrichment)
-      df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
-      if(FDR) {
-        df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
-        if(nrow(df) > topN) { df <- df[1:topN,] }
-        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
-          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-          geom_hline(yintercept=1, color="grey50", linetype="dashed")
-        return(p) 
+    } else { if(dotplot) {
       } else {
-        df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
-        if(nrow(df) > topN) { df <- df[1:topN,] }
-        p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
-          coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
-          scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
-          geom_hline(yintercept=1, color="grey50", linetype="dashed")
-        return(p) 
+        df <- subset(df, !is.na(enrichment))
+        enrichment <- df$enrichment
+        names(enrichment) <- 1:length(enrichment)
+        df <- df[as.integer(names(sort(enrichment, decreasing = T))), ]
+        if(FDR) {
+          df <- df[df$FDR > -log10(padj_cutoff) & !is.na(df$FDR), ] 
+          if(nrow(df) > topN) { df <- df[1:topN,] }
+          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
+            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+            geom_hline(yintercept=1, color="grey50", linetype="dashed")
+          return(p) 
+        } else {
+          df <- df[df$p.value > -log10(padj_cutoff) & !is.na(df$p.value), ] 
+          if(nrow(df) > topN) { df <- df[1:topN,] }
+          p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
+            coord_flip() + ylab("Enrichment fold") + xlab("") + theme_Publication() + 
+            scale_fill_gradient2(low="yellow", mid="orange", high="red", midpoint=6) + 
+            geom_hline(yintercept=1, color="grey50", linetype="dashed")
+          return(p) 
+        }
       }  
     }
   }
