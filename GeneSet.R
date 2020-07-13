@@ -22,7 +22,7 @@ loadGO <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMB
   if(length(type) == 1) {
     annots <- annots[ annots$ONTOLOGY == type,]
   }
-  data.frame(GeneSet=annots$GOALL, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
+  data.frame(GeneSet=annots$GO, Gene=annots[,4], Desc=GoDesc[annots$GO], annots[,2:3])
 }
                           
 GO.list <- function(organism = c("mouse", "human"), geneIDtype=c("SYMBOL","ENSEMBL","MGI","REFSEQ","UNIGENE","UNIPROT"), 
