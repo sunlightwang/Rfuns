@@ -46,7 +46,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
       df <- df[1:topN,]
       if(FDR) {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, FDR), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) + 
             scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
           return(p)
@@ -59,7 +59,7 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         }
       } else {
         if(dotplot) {
-          p <- ggplot(df, aes(x=reorder(term, p.value), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) +
+          p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) +
             scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
           return(p)
