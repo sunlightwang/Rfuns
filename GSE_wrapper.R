@@ -48,7 +48,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         if(dotplot) {
           p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) + 
-            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt') +
+            guides(color=guide_legend(title="-log10(FDR)"), size="gene number")
           return(p)
         } else { 
           p <- ggplot(df, aes(x=reorder(term, FDR), y=FDR)) + geom_bar(aes(fill=enrichment),stat="identity") +
@@ -61,7 +62,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         if(dotplot) {
           p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) +
-            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt') +
+            guides(color=guide_legend(title="-log10(P)"), size="gene number")
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, p.value), y=p.value)) + geom_bar(aes(fill=enrichment),stat="identity") +
@@ -82,7 +84,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         if(dotplot) {
           p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=FDR)) +
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) + 
-            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt') +
+            guides(color=guide_legend(title="-log10(FDR)"), size="gene number")
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=FDR),stat="identity") +
@@ -97,7 +100,8 @@ run_goseq <- function(DEgenelist, Allgenelist, genome=c("hg19", "mm10"), geneID=
         if(dotplot) {
           p <- ggplot(df, aes(x=reorder(term, generatio), y=generatio, size=genenum)) + geom_point(aes(color=p.value)) + 
             coord_flip() + ylab("Gene ratio") + xlab("") + scale_color_gradient(low="blue", high="red", limits=c(min(1, -log10(padj_cutoff)), NA)) + 
-            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt')
+            scale_size_continuous(range = c(1, 6), limits=c(1, NA), trans='sqrt') + 
+            guides(color=guide_legend(title="-log10(P)"), size="gene number")
           return(p)
         } else {
           p <- ggplot(df, aes(x=reorder(term, enrichment), y=enrichment)) + geom_bar(aes(fill=p.value),stat="identity") +
