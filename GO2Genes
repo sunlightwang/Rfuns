@@ -1,0 +1,16 @@
+library(GO.db)
+library(AnnotationDbi)
+library(org.Mm.eg.db)
+
+GoTerms <- as.list(GOTERM)
+GoVect <- unlist(lapply(GoTerms, function(X) GOID(X)))
+GoDesc <- unlist(lapply(GoTerms, function(X) Term(X)))
+
+annots <- AnnotationDbi::select(org.Mm.eg.db, keys=GoVect, columns="SYMBOL", keytype="GOALL")
+annots <- subset(annots, !is.na(SYMBOL) & ONTOLOGYALL=="BP")
+
+GO.BP <- data.frame(GeneSet=annots$GOALL, Gene=annots$SYMBOL, Desc=GoDesc[annots$GOALL])
+
+out <- subset(GO.BP, Desc=="cellular response to interferon-gamma")
+write.table(unique(out), file="cellular_response_to_interferon_gamma.txt" ,row.names=F, col.names=F, quote=F, sep="\t")
+
